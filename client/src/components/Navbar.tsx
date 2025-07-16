@@ -1,7 +1,8 @@
-// src/components/Navbar.tsx
-
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { AutoAwesome as AIIcon } from '@mui/icons-material';
+
+const navLinkClasses = "text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-lg";
+const activeLinkClasses = "text-cyan-400";
 
 const Navbar = () => {
   return (
@@ -18,12 +19,15 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-lg">
+            <NavLink to="/" className={({isActive}) => isActive ? `${navLinkClasses} ${activeLinkClasses}` : navLinkClasses}>
               Home
-            </Link>
-            <Link to="/about" className="text-slate-300 hover:text-cyan-400 transition-colors duration-300 text-lg">
+            </NavLink>
+            <NavLink to="/scientific-rag" className={({isActive}) => isActive ? `${navLinkClasses} ${activeLinkClasses}` : navLinkClasses}>
+              Scientific RAG
+            </NavLink>
+            <NavLink to="/about" className={({isActive}) => isActive ? `${navLinkClasses} ${activeLinkClasses}` : navLinkClasses}>
               About
-            </Link>
+            </NavLink>
             
             <Link
               to="/generate"

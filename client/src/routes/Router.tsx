@@ -3,6 +3,7 @@ import Layout from "../layout/Layout";
 import Home from "../pages/Home";
 import ContentPage from "../pages/ContentPage";
 import AboutPage from "../pages/AboutPage";
+import ScientificPage from "../pages/ScientificPage";
 
 export const router = createBrowserRouter([
     {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
             {
                 path: "/generate",
                 element: <ContentPage />
+            },
+            {
+                path: "/scientific-rag",
+                element: <ScientificPage />
             },
             {
                 path: "/about",

@@ -3,3 +3,9 @@ uvicorn
 python-dotenv
 ollama
 google-generativeai
+langchain
+langchain-community
+chromadb
+sentence-transformers
+pypdf
+arxiv
