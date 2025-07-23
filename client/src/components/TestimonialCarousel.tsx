@@ -19,7 +19,7 @@ const testimonials = [
     role: "Marketing Manager"
   },
   {
-    quote: "+I love how it generates platform-specific content. My engagement rates have skyrocketed since I started using Post GenerAItor.",
+    quote: "I love how it generates platform-specific content. My engagement rates have skyrocketed since I started using Post GenerAItor.",
     author: "Oliver T.",
     role: "Key Account Creator"
   },

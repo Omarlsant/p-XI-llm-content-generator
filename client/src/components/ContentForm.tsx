@@ -1,12 +1,18 @@
+// client/src/components/ContentForm.tsx
 import { useState } from 'react';
 import { generateContent } from '../services/contentGeneratorAPI';
-import type { GenerateContentPayload, GeneratedContent } from '../services/contentGeneratorAPI';
-
-import ReactMarkdown from 'react-markdown'; 
+import type { GeneratedContentResponse } from '../services/contentGeneratorAPI';
+import type { GenerateContentPayload } from '../services/contentGeneratorAPI';
+import ReactMarkdown from 'react-markdown';
 
 const MODEL_OPTIONS = {
   'llama3': 'Llama 3 (Local)',
   'gemini-1.5-flash': 'Gemini 1.5 Flash (Google)',
+};
+
+const LANGUAGE_OPTIONS = {
+  'English': 'English', 'Spanish': 'Spanish', 'French': 'French',
+  'German': 'German', 'Japanese': 'Japanese', 'Italian': 'Italian'
 };
 
 const ContentForm = () => {
@@ -14,64 +20,46 @@ const ContentForm = () => {
   const [platforms, setPlatforms] = useState({ blog: true, X: false, instagram: false });
   const [companyInfo, setCompanyInfo] = useState('');
   const [selectedModel, setSelectedModel] = useState<keyof typeof MODEL_OPTIONS>('llama3');
-
+  const [selectedLanguage, setSelectedLanguage] = useState<keyof typeof LANGUAGE_OPTIONS>('English');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<GeneratedContent | null>(null);
+  const [result, setResult] = useState<GeneratedContentResponse | null>(null);
 
-  // --- Handlers (sin cambios) ---
   const handlePlatformChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setPlatforms(prev => ({ ...prev, [name]: checked }));
+    setPlatforms(prev => ({ ...prev, [e.target.name]: e.target.checked }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setResult(null);
-
+    e.preventDefault(); setLoading(true); setError(null); setResult(null);
     const selectedPlatforms = Object.keys(platforms).filter((p) => platforms[p as keyof typeof platforms]);
     if (selectedPlatforms.length === 0) {
-      setError('Please select at least one platform.');
-      setLoading(false);
-      return;
+      setError('Please select at least one platform.'); setLoading(false); return;
     }
-
     const payload: GenerateContentPayload = {
-      topic,
-      platforms: selectedPlatforms,
-      model: selectedModel,
-      company_info: companyInfo || undefined,
+      topic, platforms: selectedPlatforms, model: selectedModel,
+      language: selectedLanguage, company_info: companyInfo || undefined,
     };
-
     try {
       const data = await generateContent(payload);
       setResult(data);
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
-  // --- JSX (con la sección de resultados actualizada) ---
   return (
     <div className="w-full max-w-3xl mx-auto py-12 px-4">
-      <h1 className="text-4xl font-bold text-center mb-2">
-        Create Your <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Content</span>
-      </h1>
+      <h1 className="text-4xl font-bold text-center mb-2">Create Your <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Content</span></h1>
       <p className="text-center text-slate-400 mb-8">Fill out the form below to get started.</p>
       
-      {/* FORMULARIO (sin cambios) */}
       <form onSubmit={handleSubmit} className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 shadow-xl space-y-8">
         <div>
           <label htmlFor="topic" className="block text-lg font-medium mb-2">What do you want to write about?</label>
-          <textarea id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Ex: The impact of AI on modern society" className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all" rows={4} required />
+          <textarea id="topic" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Ex: The impact of AI on modern society" className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500" rows={4} required />
         </div>
         <div>
           <label htmlFor="companyInfo" className="block text-lg font-medium mb-2">Company / Brand Information <span className="text-sm text-slate-400">(Optional)</span></label>
-          <textarea id="companyInfo" value={companyInfo} onChange={(e) => setCompanyInfo(e.target.value)} placeholder="Ex: We are a startup that sells eco-friendly coffee mugs..." className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all" rows={3} />
+          <textarea id="companyInfo" value={companyInfo} onChange={(e) => setCompanyInfo(e.target.value)} placeholder="Ex: We are a startup that sells eco-friendly coffee mugs..." className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500" rows={3} />
         </div>
         <div>
           <label className="block text-lg font-medium mb-3">Which platforms are you targeting?</label>
@@ -85,41 +73,38 @@ const ContentForm = () => {
           </div>
         </div>
         <div>
-           <label htmlFor="model-select" className="block text-lg font-medium mb-2">Choose an AI Model</label>
-            <select id="model-select" value={selectedModel} onChange={(e) => setSelectedModel(e.target.value as keyof typeof MODEL_OPTIONS)} className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all appearance-none bg-no-repeat bg-right pr-8" style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="rgb(156 163 175)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundPosition: 'right 0.75rem center' }}>
-              {Object.entries(MODEL_OPTIONS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+          <label htmlFor="language-select" className="block text-lg font-medium mb-2">Select Language</label>
+          <select id="language-select" value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value as keyof typeof LANGUAGE_OPTIONS)} className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none bg-no-repeat bg-right pr-8" style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="rgb(156 163 175)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundPosition: 'right 0.75rem center' }}>
+            {Object.entries(LANGUAGE_OPTIONS).map(([value, label]) => (<option key={value} value={value}>{label}</option>))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="model-select" className="block text-lg font-medium mb-2">Choose an AI Model</label>
+          <select id="model-select" value={selectedModel} onChange={(e) => setSelectedModel(e.target.value as keyof typeof MODEL_OPTIONS)} className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none bg-no-repeat bg-right pr-8" style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="rgb(156 163 175)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundPosition: 'right 0.75rem center' }}>
+            {Object.entries(MODEL_OPTIONS).map(([value, label]) => (<option key={value} value={value}>{label}</option>))}
+          </select>
         </div>
         <button type="submit" disabled={loading} className="w-full text-lg bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-cyan-500/40 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed disabled:text-slate-400">
           {loading ? 'Generating...' : 'Generate Content'}
         </button>
       </form>
       
-      {/* MENSAJE DE ERROR (sin cambios) */}
       {error && (
-        <div className="mt-8 bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-lg">
-          <strong>Error:</strong> {error}
-        </div>
+        <div className="mt-8 bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-lg"><strong>Error:</strong> {error}</div>
       )}
-
-      {/* --- 2. SECCIÓN DE RESULTADOS ACTUALIZADA CON MARKDOWN --- */}
+      
       {result && (
         <div className="mt-10 bg-slate-800/50 p-8 rounded-xl border border-slate-700 animate-fade-in">
           <h2 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Generated Results</h2>
-          {Object.entries(result).map(([platform, content]) => (
+          {result.image_url && (
+            <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
+              <img src={result.image_url} alt={result.image_alt || ''} className="w-full h-auto object-cover" />
+            </div>
+          )}
+          {Object.entries(result.generated_content).map(([platform, content]) => (
             <div key={platform} className="mb-8 last:mb-0">
               <h3 className="text-2xl font-semibold capitalize mb-4 border-b-2 border-slate-700 pb-2 text-cyan-400">{platform}</h3>
-              {/* Contenedor con estilos 'prose' para renderizar el Markdown */}
-              <div
-                className="prose prose-invert max-w-none 
-                           prose-headings:text-slate-100 prose-h3:text-cyan-400 prose-h4:text-cyan-400
-                           prose-strong:text-slate-100
-                           prose-a:text-violet-400 hover:prose-a:text-violet-300
-                           prose-ul:list-disc prose-ol:list-decimal
-                           prose-blockquote:border-violet-500 prose-blockquote:text-slate-400"
-              >
+              <div className="prose prose-invert max-w-none prose-headings:text-slate-100 prose-a:text-violet-400">
                 <ReactMarkdown>{content}</ReactMarkdown>
               </div>
             </div>
