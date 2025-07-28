@@ -1,4 +1,7 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// client/src/services/contentGeneratorAPI.ts
+
+// Fallback added for safety, in case the .env variable is not set.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 export interface GenerateContentPayload {
   topic: string;
@@ -16,7 +19,11 @@ export interface GeneratedContentResponse {
 }
 
 export const generateContent = async (payload: GenerateContentPayload): Promise<GeneratedContentResponse> => {
-  const fullUrl = `${API_BASE_URL}/api/v1/generate`;
+  // --- THE ONLY CHANGE IS HERE ---
+  // The backend route was changed from `/api/v1/generate` to `/api/v1/content-agent`
+  // and the specific endpoint path is `/` at the end, which is optional in the fetch call.
+  const fullUrl = `${API_BASE_URL}/api/v1/content-agent`;
+  
   console.log("Sending ContentGen payload:", payload, "to URL:", fullUrl);
 
   const response = await fetch(fullUrl, {
@@ -26,6 +33,10 @@ export const generateContent = async (payload: GenerateContentPayload): Promise<
   });
 
   if (!response.ok) {
+    // Providing a more helpful error for 404
+    if (response.status === 404) {
+      throw new Error(`Error: Not Found. The API endpoint at ${fullUrl} could not be reached. Please check the backend router configuration.`);
+    }
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
@@ -35,7 +46,7 @@ export const generateContent = async (payload: GenerateContentPayload): Promise<
   return response.json();
 };
 
-// --- RAG Function ---
+// --- RAG Functions (These are already correct, no changes needed) ---
 export interface RAGQueryPayload { question: string; }
 export interface RAGQueryResponse { answer: string; }
 

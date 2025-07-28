@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import ContentPage from "../pages/ContentPage";
 import AboutPage from "../pages/AboutPage";
 import ScientificPage from "../pages/ScientificPage";
+import ContentFormPage from "../pages/ContentFormPage";
+import ContentQueryPage from "../pages/ContentQueryPage";
 
 export const router = createBrowserRouter([
     {
@@ -17,6 +19,14 @@ export const router = createBrowserRouter([
             {
                 path: "/generate",
                 element: <ContentPage />
+            },
+            {
+                path: "/generate/content-agent",
+                element: <ContentFormPage />
+            },
+            {
+                path: "/generate/query-agent",
+                element: <ContentQueryPage />
             },
             {
                 path: "/scientific-rag",

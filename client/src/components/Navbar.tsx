@@ -33,7 +33,7 @@ const Navbar = () => {
               to="/generate"
               className="bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-semibold py-2 px-5 rounded-lg shadow-md hover:shadow-lg hover:shadow-cyan-500/40 hover:-translate-y-1 transition-all duration-300"
             >
-              Create Content
+              Our Agents
             </Link>
           </div>
         </div>

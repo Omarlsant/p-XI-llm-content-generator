@@ -1,3 +1,4 @@
+# server/services/generator_service.py
 import asyncio
 import httpx
 import google.generativeai as genai
@@ -37,7 +38,7 @@ async def find_relevant_image(topic: str) -> dict:
         logger.error(f"Error fetching image: {e}", exc_info=True)
     return None
 
-# --- Simple, Non-Agentic Generation ---
+# --- STRATEGY 1: Simple, Non-Agentic Generation ---
 def get_simple_prompt_template(platform: str) -> str:
     templates = {
         "blog": ("{company_context}You are an expert blog writer. You must write in {language}. Write a comprehensive blog post about 300-400 words on the topic. Use markdown formatting. Topic: '{topic}'"),
@@ -46,16 +47,13 @@ def get_simple_prompt_template(platform: str) -> str:
     }
     return templates.get(platform, "")
 
-async def generate_simple_content(platform: str, topic: str, company_info: Optional[str], language: str) -> str:
+async def generate_simple_content(platform: str, topic: str, company_info: Optional[str], language: str, **kwargs) -> str:
     logger.info(f"Using SIMPLE generation for platform '{platform}'")
     llm = ollama.AsyncClient()
-    
     raw_template = get_simple_prompt_template(platform)
     if not raw_template: return ""
-    
     company_context = f"Company/Brand Information: '''{company_info}'''\n\n" if company_info else ""
     full_prompt = raw_template.format(company_context=company_context, language=language, topic=topic)
-    
     try:
         response = await llm.chat(model='llama3', messages=[{'role': 'user', 'content': full_prompt}])
         return response['message']['content'].strip()
@@ -63,77 +61,110 @@ async def generate_simple_content(platform: str, topic: str, company_info: Optio
         logger.error(f"Simple generation failed for {platform}: {e}", exc_info=True)
         return f"Error: Standard generation failed for {platform}."
 
-# --- Agentic Generation ---
-async def generate_content_with_agent(platform: str, topic: str, company_info: Optional[str], language: str) -> str:
+# --- Platform-Specific Constraints for the Agent ---
+def get_platform_constraints(platform: str) -> str:
+    """Returns a string with specific formatting rules for a platform."""
+    constraints = {
+        "blog": "The output must be a well-structured blog post of 300-400 words, using markdown for formatting.",
+        "X": "The output MUST be a short, concise tweet under 280 characters and include relevant hashtags.",
+        "instagram": "The output must be an engaging Instagram caption, including emojis and relevant hashtags."
+    }
+    return constraints.get(platform, "The output should be a standard text response.")
+
+# --- STRATEGY 2: Agentic Generation ---
+async def generate_content_with_agent(platform: str, topic: str, company_info: Optional[str], language: str, use_search: bool, **kwargs) -> str:
     logger.info(f"Using AGENTIC generation for platform '{platform}'")
     llm = ChatOllama(model="llama3", temperature=0)
-    tools = [TavilySearchResults(max_results=3)]
     
-    react_prompt_template = """
-You are a helpful assistant. Answer the user's question as best as you can. You have access to the following tools:
-{tools}
+    tools = []
+    if use_search and settings.TAVILY_API_KEY:
+        search_tool = TavilySearchResults(max_results=3)
+        search_tool.description = (
+            "A search engine. Use this to find real-time information on any topic. "
+            "After using this tool once, you will have enough information to write the final answer."
+        )
+        tools.append(search_tool)
+    
+    platform_specific_rules = get_platform_constraints(platform)
+    
+    react_prompt_template = f"""
+Answer the user's request using the available tools if necessary.
+
+You have access to the following tools:
+{{tools}}
 
 Use the following format:
-Thought: Do I need to use a tool? Yes or No.
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action
-Observation: the result of the action
-Thought: I now know the final answer.
-Final Answer: [the final response to the user's original question]
+Thought: Do I need to use a tool to find up-to-date information? Yes or No.
+Action: The action to take, should be one of [{{tool_names}}]
+Action Input: A clear and concise search query for the tool.
+Observation: The result of the action.
+Thought: I now have sufficient information to generate the final answer according to all the user's rules.
+Final Answer: [The final response]
 
-**Important instructions:**
-- If you can answer the question from your own knowledge without using a tool, respond immediately with your 'Final Answer:'.
-- Your final answer must fulfill the user's request precisely.
+**Very Important Rules for your Final Answer:**
+1. Your final answer MUST strictly follow these platform-specific rules: "{platform_specific_rules}"
+2. Your final answer MUST be written entirely in {language}.
+3. If provided, use this context: {{company_context}}.
 
 Begin!
 
 User request: Generate content for the {platform} platform about the topic: '{topic}'.
-You must write the final answer entirely in {language}.
-If company information is provided, use it for context: {company_context}.
-Question: {input}
-Thought:{agent_scratchpad}
+Question: {{input}}
+Thought:{{agent_scratchpad}}
 """
     prompt = PromptTemplate.from_template(react_prompt_template)
     agent = create_react_agent(llm, tools, prompt)
+    agent_executor = AgentExecutor(
+        agent=agent, tools=tools, verbose=False, 
+        handle_parsing_errors=True, max_iterations=5,
+        early_stopping_method="generate"
+    )
     
-    # --- Cleaner logs ---
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False, handle_parsing_errors=True, max_iterations=8)
-    
-    company_context_str = f"Company/Brand Information: '''{company_info}'''" if company_info else "No company info provided."
-    input_dict = { "platform": platform, "topic": topic, "language": language, "company_context": company_context_str, "input": f"Generate content for {platform} about: {topic}" }
+    company_context_str = f"'''{company_info}'''" if company_info else "No company info provided."
+    input_dict = {
+        "platform": platform,
+        "topic": topic,
+        "language": language,
+        "company_context": company_context_str,
+        "input": f"Generate content for {platform} about: {topic}",
+    }
 
     try:
         response = await agent_executor.ainvoke(input_dict)
         return response['output'].strip()
     except Exception as e:
-        error_details = format_exc()
-        logger.error(f"!!!!!! AGENT EXECUTION FAILED FOR PLATFORM '{platform}' !!!!!!\n{error_details}")
+        logger.error(f"AGENT EXECUTION FAILED FOR '{platform}':\n{format_exc()}")
         return f"Error: Agent failed for {platform}."
-
 
 # --- Main Service Function (Orchestrator) ---
 async def generate_content_service(request: ContentGenerationRequest) -> dict:
-    logger.info(f"Starting content service for topic '{request.topic}'")
+    logger.info(f"SERVICE ENTRYPOINT. Received request with use_news_search = {request.use_news_search} (Type: {type(request.use_news_search)})")
+    
     platform_names = [p for p in request.platforms if p in ["blog", "X", "instagram"]]
     text_gen_tasks = []
 
-    if request.use_news_search:
-        gen_function = generate_content_with_agent
-    else:
-        gen_function = generate_simple_content
-            
-    for p in platform_names:
-        task = gen_function(p, request.topic, request.company_info, request.language)
-        text_gen_tasks.append(task)
+    gen_function = generate_content_with_agent if request.use_news_search else generate_simple_content
 
+    for p in platform_names:
+        task = gen_function(
+            platform=p, 
+            topic=request.topic, 
+            company_info=request.company_info, 
+            language=request.language,
+            use_search=request.use_news_search 
+        )
+        text_gen_tasks.append(task)
+            
     image_gen_task = find_relevant_image(request.topic)
     
     all_tasks = text_gen_tasks + [image_gen_task]
     results = await asyncio.gather(*all_tasks, return_exceptions=True)
+    
     image_result = results[-1]
     text_results = results[:-1]
-    content_dict = { name: res if not isinstance(res, Exception) else f"Error." for name, res in zip(platform_names, text_results) }
+    content_dict = { name: res for name, res in zip(platform_names, text_results) if not isinstance(res, Exception) }
     image_url, image_alt = (None, None)
     if isinstance(image_result, dict) and image_result:
         image_url, image_alt = image_result.get("url"), image_result.get("alt")
+
     return {"generated_content": content_dict, "image_url": image_url, "image_alt": image_alt}
