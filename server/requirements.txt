@@ -10,3 +10,8 @@ sentence-transformers
 pypdf
 arxiv
 httpx
+langchain-experimental
+google-search-results
+newsapi-python
+langchain-community
+networkx

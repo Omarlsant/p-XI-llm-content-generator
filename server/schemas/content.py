@@ -7,6 +7,7 @@ class ContentGenerationRequest(BaseModel):
     model: Optional[str] = 'llama3'
     company_info: Optional[str] = None
     language: Optional[str] = 'English'
+    use_news_search: Optional[bool] = False
 
 class ContentGenerationResponse(BaseModel):
     generated_content: Dict[str, str]

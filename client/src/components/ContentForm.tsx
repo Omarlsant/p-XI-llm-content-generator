@@ -1,8 +1,7 @@
-// client/src/components/ContentForm.tsx
 import { useState } from 'react';
 import { generateContent } from '../services/contentGeneratorAPI';
-import type { GeneratedContentResponse } from '../services/contentGeneratorAPI';
 import type { GenerateContentPayload } from '../services/contentGeneratorAPI';
+import type { GeneratedContentResponse } from '../services/contentGeneratorAPI';
 import ReactMarkdown from 'react-markdown';
 
 const MODEL_OPTIONS = {
@@ -21,6 +20,8 @@ const ContentForm = () => {
   const [companyInfo, setCompanyInfo] = useState('');
   const [selectedModel, setSelectedModel] = useState<keyof typeof MODEL_OPTIONS>('llama3');
   const [selectedLanguage, setSelectedLanguage] = useState<keyof typeof LANGUAGE_OPTIONS>('English');
+  const [useNewsSearch, setUseNewsSearch] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GeneratedContentResponse | null>(null);
@@ -38,6 +39,7 @@ const ContentForm = () => {
     const payload: GenerateContentPayload = {
       topic, platforms: selectedPlatforms, model: selectedModel,
       language: selectedLanguage, company_info: companyInfo || undefined,
+      use_news_search: useNewsSearch,
     };
     try {
       const data = await generateContent(payload);
@@ -72,6 +74,31 @@ const ContentForm = () => {
             ))}
           </div>
         </div>
+
+        <div className="space-y-4">
+            <label className="block text-lg font-medium">Advanced Options</label>
+            <div className="relative flex items-start">
+                <div className="flex h-6 items-center">
+                <input
+                    id="news-search"
+                    name="news-search"
+                    type="checkbox"
+                    checked={useNewsSearch}
+                    onChange={(e) => setUseNewsSearch(e.target.checked)}
+                    className="h-5 w-5 rounded-sm bg-slate-700 border-slate-600 text-cyan-600 focus:ring-cyan-500 focus:ring-offset-slate-800"
+                />
+                </div>
+                <div className="ml-3 text-sm leading-6">
+                <label htmlFor="news-search" className="font-medium text-slate-200">
+                    Enable Live News Search
+                </label>
+                <p id="news-search-description" className="text-slate-400">
+                    Slower, but uses real-time news for topics about current events or finance.
+                </p>
+                </div>
+            </div>
+        </div>
+        
         <div>
           <label htmlFor="language-select" className="block text-lg font-medium mb-2">Select Language</label>
           <select id="language-select" value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value as keyof typeof LANGUAGE_OPTIONS)} className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none bg-no-repeat bg-right pr-8" style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="rgb(156 163 175)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundPosition: 'right 0.75rem center' }}>
@@ -89,18 +116,12 @@ const ContentForm = () => {
         </button>
       </form>
       
-      {error && (
-        <div className="mt-8 bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-lg"><strong>Error:</strong> {error}</div>
-      )}
-      
+      {/* Result and Error sections */}
+      {error && (<div className="mt-8 bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-lg"><strong>Error:</strong> {error}</div>)}
       {result && (
         <div className="mt-10 bg-slate-800/50 p-8 rounded-xl border border-slate-700 animate-fade-in">
           <h2 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Generated Results</h2>
-          {result.image_url && (
-            <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
-              <img src={result.image_url} alt={result.image_alt || ''} className="w-full h-auto object-cover" />
-            </div>
-          )}
+          {result.image_url && (<div className="mb-8 rounded-lg overflow-hidden shadow-lg"><img src={result.image_url} alt={result.image_alt || ''} className="w-full h-auto object-cover" /></div>)}
           {Object.entries(result.generated_content).map(([platform, content]) => (
             <div key={platform} className="mb-8 last:mb-0">
               <h3 className="text-2xl font-semibold capitalize mb-4 border-b-2 border-slate-700 pb-2 text-cyan-400">{platform}</h3>

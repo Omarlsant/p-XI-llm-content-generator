@@ -10,6 +10,7 @@ class Settings:
     APP_NAME: str = os.getenv("APP_NAME", "FastAPI App")
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY")
     UNSPLASH_ACCESS_KEY: str = os.getenv("UNSPLASH_ACCESS_KEY")
+    TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY")
 
 # Create an instance of the Settings class.
 settings = Settings()
