@@ -1,13 +1,14 @@
 # server/services/rag_service.py
 import os
-import re # Import regular expressions
+import re
 import networkx as nx
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser, JsonOutputParser
+from core.config import settings
 from core.log_config import logger
 
 # --- Configuration & Helpers ---
@@ -16,15 +17,20 @@ KNOWLEDGE_BASE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "
 embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
 def format_docs(docs): return "\n\n".join(doc.page_content for doc in docs)
 
-# --- Standard Vector RAG Service (RESTORED TO WORKING STATE) ---
+# --- Standard Vector RAG Service ---
 class RAGService:
     def __init__(self):
         logger.info("Initializing RAGService with Guardrails...")
-        if not os.path.exists(DB_DIR): raise FileNotFoundError(f"ChromaDB not found...")
+        if not os.path.exists(DB_DIR): raise FileNotFoundError(f"ChromaDB not found. Please run ingestion script.")
+        
+        # --- THE FIX FOR DOCKER ---
+        ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
+        logger.info(f"RAGService connecting to Ollama at: {ollama_base_url}")
+
         self.vectorstore = Chroma(persist_directory=DB_DIR, embedding_function=embedding_function)
         self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 5})
-        self.llm = ChatOllama(model="llama3", temperature=0.2)
-        self.grading_llm = ChatOllama(model="llama3", format="json", temperature=0)
+        self.llm = ChatOllama(model="llama3", temperature=0.2, base_url=ollama_base_url)
+        self.grading_llm = ChatOllama(model="llama3", format="json", temperature=0, base_url=ollama_base_url)
         
         generation_prompt = ChatPromptTemplate.from_template(
             "You are an AI research assistant. Your task is to answer the user's `question` based on the provided `context`.\n"
@@ -62,39 +68,38 @@ class RAGService:
 def get_rag_service() -> RAGService:
     return RAGService()
 
-# --- GraphRAG PoC Service (ROBUST PARSING WITH REGEX) ---
+# --- GraphRAG PoC Service ---
 class GraphRAGService:
     def __init__(self):
         logger.info("Initializing GraphRAGService with clean knowledge base...")
         self.graph = nx.Graph()
-        self.llm_extractor = ChatOllama(model="llama3", temperature=0)
+
+        # --- THE FIX FOR DOCKER ---
+        ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
+        logger.info(f"GraphRAGService connecting to Ollama at: {ollama_base_url}")
+        self.llm_extractor = ChatOllama(model="llama3", temperature=0, base_url=ollama_base_url)
+        
         try:
-            with open(KNOWLEDGE_BASE_FILE, "r") as f:
+            with open(KNOWLEDGE_BASE_FILE, "r", encoding="utf-8") as f:
                 text_for_graph = f.read()
             self._build_graph(text_for_graph)
         except Exception as e:
             logger.error(f"Failed to initialize GraphRAG: {e}", exc_info=True)
 
     def _build_graph(self, text_chunk: str):
-        # --- FIX: We now ask for PLAIN TEXT and parse it ourselves. ---
         extraction_prompt = PromptTemplate.from_template(
             "You are a knowledge graph creator. From the TEXT below, extract relationships.\n"
             "List each relationship as `(Entity 1, Relationship, Entity 2)` on a new line.\n"
             "Example:\n(Lewis et al., proposed, RAG framework)\n(RAG framework, uses, retriever)\n\n"
             "TEXT:\n{text_chunk}"
         )
-        # Use StrOutputParser, not JsonOutputParser
         extraction_chain = extraction_prompt | self.llm_extractor | StrOutputParser()
         try:
-            # The output is now a single string
             response_text = extraction_chain.invoke({"text_chunk": text_chunk})
-            
-            # --- FIX: Use Regex to reliably find all triplets ---
             triplets = re.findall(r'\((.*?),\s*(.*?),\s*(.*?)\)', response_text)
             logger.info(f"Extracted {len(triplets)} triplets using regex parsing.")
 
             for source, rel, target in triplets:
-                # Clean up any potential markdown or extra quotes
                 source_clean = source.strip(' "`')
                 rel_clean = rel.strip(' "`')
                 target_clean = target.strip(' "`')

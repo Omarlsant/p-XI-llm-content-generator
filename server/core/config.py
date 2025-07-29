@@ -11,6 +11,7 @@ class Settings:
     GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY")
     UNSPLASH_ACCESS_KEY: str = os.getenv("UNSPLASH_ACCESS_KEY")
     TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY")
+    OLLAMA_HOST: str = os.getenv("OLLAMA_HOST")
 
 # Create an instance of the Settings class.
 settings = Settings()
