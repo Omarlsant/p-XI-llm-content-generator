@@ -1,0 +1,43 @@
+services:
+  # --- Backend Service ---
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: genai_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Monta tu código del backend para que los cambios se reflejen sin reconstruir
+      - ./server:/app
+      # Persiste la base de datos de Chroma fuera del contenedor
+      - chroma_data:/app/chroma_db
+    environment:
+      - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2}
+      - LANGCHAIN_ENDPOINT=${LANGCHAIN_ENDPOINT}
+      - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+      - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - OLLAMA_HOST=${OLLAMA_HOST}
+    # Para que el backend pueda "ver" el Ollama corriendo en tu PC
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  # --- Frontend Service ---
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: genai_frontend
+    ports:
+      - "5173:80" # Mapea el puerto 80 del contenedor a 5173 en tu máquina
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+# --- Named Volume for Data Persistence ---
+volumes:
+  chroma_data:
