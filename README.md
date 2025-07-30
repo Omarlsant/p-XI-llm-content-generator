@@ -1,6 +1,6 @@
 # 🚀 Post GenerAItor: Un Asistente de Contenido con IA y Agentes Especializados
 
-
+<img width="2079" height="320" alt="Captura de pantalla 2025-07-30 121038" src="https://github.com/user-attachments/assets/3ee032c2-a4fa-4d47-8da3-fab2bc020796" />
 
 **Post GenerAItor** es una aplicación full-stack desarrollada para explorar y demostrar las capacidades de los Grandes Modelos de Lenguaje (LLMs) y los patrones de IA modernos. La aplicación cuenta con múltiples agentes de IA especializados, cada uno diseñado para una tarea específica, desde la creación de contenido creativo hasta la investigación factual basada en documentos.
 
@@ -93,7 +93,13 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
 
 ## 🖼️ Galería (Screenshots)
 
+<img width="1968" height="1040" alt="Captura de pantalla 2025-07-30 121105" src="https://github.com/user-attachments/assets/ffd9a4cd-09eb-4213-8920-a0a613cfa24b" />
 
+<img width="1081" height="1360" alt="Captura de pantalla 2025-07-30 144017" src="https://github.com/user-attachments/assets/4b3df750-fd81-4417-a8b4-3297cc48b4d7" />
+
+<img width="1073" height="1426" alt="Captura de pantalla 2025-07-30 144006" src="https://github.com/user-attachments/assets/56f4d868-09d5-4d3f-8a16-29ef897ef691" />
+
+<img width="1237" height="1619" alt="Captura de pantalla 2025-07-30 150138" src="https://github.com/user-attachments/assets/cf87ecf1-e7f5-41d9-890f-86727575d3dc" />
 
 ## 📝 Próximos Pasos (Posibles Mejoras)
 
