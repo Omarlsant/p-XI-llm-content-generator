@@ -1,4 +1,3 @@
-# server/services/rag_service.py
 import os
 import re
 import networkx as nx
@@ -23,7 +22,6 @@ class RAGService:
         logger.info("Initializing RAGService with Guardrails...")
         if not os.path.exists(DB_DIR): raise FileNotFoundError(f"ChromaDB not found. Please run ingestion script.")
         
-        # --- THE FIX FOR DOCKER ---
         ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
         logger.info(f"RAGService connecting to Ollama at: {ollama_base_url}")
 
@@ -74,7 +72,6 @@ class GraphRAGService:
         logger.info("Initializing GraphRAGService with clean knowledge base...")
         self.graph = nx.Graph()
 
-        # --- THE FIX FOR DOCKER ---
         ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
         logger.info(f"GraphRAGService connecting to Ollama at: {ollama_base_url}")
         self.llm_extractor = ChatOllama(model="llama3", temperature=0, base_url=ollama_base_url)

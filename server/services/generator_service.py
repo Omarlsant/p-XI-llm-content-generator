@@ -182,7 +182,7 @@ import json
 from typing import Optional, List
 from traceback import format_exc
 
-# --- CORE LANGCHAIN IMPORTS (Minimal Set for Manual Agent) ---
+# --- CORE LANGCHAIN IMPORTS ---
 from langchain_community.chat_models import ChatOllama
 from langchain_community.tools.tavily_search import TavilySearchResults
 
@@ -212,7 +212,7 @@ async def find_relevant_image(topic: str) -> dict:
         logger.error(f"Error fetching image: {e}", exc_info=True)
     return None
 
-# --- STRATEGY 1: Simple, Non-Agentic Generation ---
+# --- Simple Agentic Generation ---
 def get_simple_prompt_template(platform: str) -> str:
     templates = {
         "blog": ("{company_context}You are an expert blog writer in {language}. Write a comprehensive blog post about 300-400 words on: '{topic}'. Use markdown."),
@@ -244,7 +244,7 @@ def get_platform_constraints(platform: str) -> str:
     }
     return constraints.get(platform, "a standard text response.")
 
-# --- STRATEGY 2: Manual Agentic Generation ---
+# --- Agentic Generation ---
 async def generate_content_with_agent(platform: str, topic: str, company_info: Optional[str], language: str, use_search: bool, **kwargs) -> str:
     logger.info(f"Using MANUAL AGENT for '{platform}'")
     

@@ -1,93 +1,63 @@
-# server/services/query_agent_service.py
-import json
-import re
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import JsonOutputParser
 from langchain_community.chat_models import ChatOllama
-from pydantic.v1 import BaseModel as BaseModelV1, Field
-from typing import Literal
 from schemas.content import QueryAgentRequest
-
 from services import generator_service
 from services import rag_service
+from core.config import settings
 from core.log_config import logger
-
-class RouteQuery(BaseModelV1):
-    destination: Literal["rag_agent", "content_agent", "fallback"]
+from traceback import format_exc
 
 class QueryAgentService:
     def __init__(self):
-        logger.info("Initializing Hybrid Router Query Agent...")
-        # This LLM is now a simple classifier, not a complex extractor.
-        llm = ChatOllama(model="llama3", format="json", temperature=0)
-        
-        # A much simpler prompt for a simpler task
-        classifier_prompt_template = """You are an expert request classifier.
-Your task is to classify the user's intent based on their query.
-Choose one of the following destinations:
-- `rag_agent`: If the user asks a factual question, a "what is" question, or mentions "RAG".
-- `content_agent`: If the user explicitly asks to 'write', 'create', or 'generate' some content like a post or blog.
-- `fallback`: For all other cases, like greetings or unclear requests.
-You must respond with a JSON object with a single key "destination".
-
-<< EXAMPLES >>
-Query: "What is Retrieval-Augmented Generation?" -> {{"destination": "rag_agent"}}
-Query: "Write a blog post about AI" -> {{"destination": "content_agent"}}
-Query: "Hi there!" -> {{"destination": "fallback"}}
-
-<< USER QUERY >>
-{question}
-
-<< YOUR JSON RESPONSE >>
-"""
-        parser = JsonOutputParser(pydantic_object=RouteQuery)
-        prompt = ChatPromptTemplate.from_template(classifier_prompt_template)
-        self.classifier_chain = prompt | llm | parser
-        logger.info("Hybrid Router Query Agent initialized.")
+        logger.info("Initializing SIMPLEST Query Agent...")
+        ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
+        self.llm = ChatOllama(model="llama3", temperature=0, base_url=ollama_base_url)
+        logger.info("SIMPLEST Query Agent initialized.")
 
     async def invoke(self, request: QueryAgentRequest) -> str:
-        question_lower = request.question.lower()
-        logger.info(f"Query Agent routing pure question: '{request.question}'")
+        question = request.question
+        logger.info(f"Manual Agent received question: '{question}'")
 
-        # --- Rule-Based Routing (Code First) ---
-        content_keywords = ['write', 'create', 'generate', 'post', 'blog', 'tweet', 'caption']
+        # Classify the user's intent using a simple prompt
+        classification_prompt = f"""Classify the user's intent. Choose ONE category: 'content_creation', 'rag_query', or 'fallback'.
+        - Use 'content_creation' for requests to write or generate content.
+        - Use 'rag_query' for questions asking for facts or definitions.
+        - Use 'fallback' for greetings or anything else.
+        Your answer MUST be a single word.
+        User Request: "{question}"
+        Category:"""
         
-        # If the user explicitly asks to create content, we force the content_agent.
-        if any(keyword in question_lower for keyword in content_keywords):
-            logger.info("Keyword match found. Routing directly to: content_agent")
-            destination = "content_agent"
-        else:
-            # --- AI-Based Routing (LLM as Fallback Classifier) ---
-            logger.info("No keyword match. Using LLM to classify intent...")
-            try:
-                classification = await self.classifier_chain.ainvoke({"question": request.question})
-                destination = classification.get("destination", "fallback")
-            except Exception:
-                logger.error("LLM classifier failed. Defaulting to fallback.")
-                destination = "fallback"
+        # Attempt to classify the intent using the LLM
+        try:
+            logger.info("Agent Step 1: Classifying intent...")
+            classification_response = await self.llm.ainvoke(classification_prompt)
+            destination = classification_response.content.strip().lower().replace("'", "").replace('"', '').split()[0]
+            logger.info(f"LLM classified intent as: '{destination}'")
+        except Exception as e:
+            logger.error(f"LLM classifier failed: {e}\n{format_exc()}")
+            destination = "fallback"
 
-        logger.info(f"Query Agent final destination: {destination}")
-        
-        # --- Execute the chosen specialist ---
-        if destination == "rag_agent":
+        logger.info(f"Routing to destination: {destination}")
+
+        if "rag_query" in destination:
+            logger.info("Executing RAG Agent...")
             rag_svc = rag_service.get_rag_service()
             return await rag_svc.query(request.question)
 
-        elif destination == "content_agent":
+        elif "content_creation" in destination:
+            logger.info("Executing Content Agent...")
             from schemas.content import ContentGenerationRequest
             content_request = ContentGenerationRequest(
-                topic=request.question, # The whole question is the topic
-                platforms=["blog"],     # Default to blog for ambiguous content requests
+                topic=request.question,
                 language=request.language,
                 company_info=request.company_info,
-                use_news_search=request.use_search,
-                model="llama3"
+                use_news_search=request.use_search
             )
             result = await generator_service.generate_content_service(content_request)
             return str(result.get("generated_content", "Failed to generate content."))
             
         else:
-            return "Thank you for your query. I can generate content or answer questions about RAG. Could you be more specific? (e.g., 'Write a blog about...' or 'What is...?')"
+            logger.info("Routing to fallback.")
+            return "Thank you for your query. I can either generate content (e.g., 'write a blog about AI') or answer questions (e.g., 'what is RAG?'). Please specify your request."
 
 def get_query_agent_service() -> QueryAgentService:
     if "query_agent_service_instance" not in globals():

@@ -1,4 +1,3 @@
-# server/api/v1/api_router.py
 from fastapi import APIRouter
 from api.v1.endpoints import content_generator, scientific_rag, query_agent
 

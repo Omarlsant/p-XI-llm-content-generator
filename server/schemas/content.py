@@ -1,8 +1,7 @@
-# server/schemas/content.py
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 
-# --- Content Agent Schemas (already correct) ---
+# --- Content Agent Schemas ---
 class ContentGenerationRequest(BaseModel):
     topic: str
     platforms: List[str]
@@ -16,7 +15,6 @@ class ContentGenerationResponse(BaseModel):
     image_url: Optional[str] = None
     image_alt: Optional[str] = None
 
-# --- Query Agent Schemas (MOVED HERE) ---
 class QueryAgentRequest(BaseModel):
     question: str
     language: str

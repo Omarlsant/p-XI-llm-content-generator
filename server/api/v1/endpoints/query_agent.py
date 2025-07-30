@@ -1,11 +1,11 @@
-# server/api/v1/endpoints/query_agent.py
 from fastapi import APIRouter, Depends, HTTPException
-from schemas.content import QueryAgentRequest # <-- IMPORT FROM SCHEMAS
+from schemas.content import QueryAgentRequest
 from services.query_agent_service import QueryAgentService, get_query_agent_service
 from core.log_config import logger
 
 router = APIRouter()
 
+# Endpoint to invoke the Query Agent
 @router.post("/invoke")
 async def invoke_query_agent_endpoint(
     request: QueryAgentRequest,
