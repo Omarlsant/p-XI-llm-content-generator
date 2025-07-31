@@ -4,7 +4,7 @@
 
 **Post GenerAItor** es una aplicación full-stack desarrollada para explorar y demostrar las capacidades de los Grandes Modelos de Lenguaje (LLMs) y los patrones de IA modernos. La aplicación cuenta con múltiples agentes de IA especializados, cada uno diseñado para una tarea específica, desde la creación de contenido creativo hasta la investigación factual basada en documentos.
 
-## ✨ Características Principales
+## ✨ Características Principales de la Aplicación
 
 Este proyecto no es solo un generador de texto; es una suite de herramientas de IA:
 
@@ -38,7 +38,7 @@ Este proyecto fue construido priorizando la velocidad de desarrollo y las herram
 
 ---
 
-## 🚀 Cómo Empezar
+## 🚀 Cómo Empezar.
 
 La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo necesitas tener Docker y Docker Compose instalados.
 
@@ -91,7 +91,7 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
 
 ---
 
-## 🖼️ Galería (Screenshots)
+## 🖼️ Galería (Screenshots).
 
 <img width="1968" height="1040" alt="Captura de pantalla 2025-07-30 121105" src="https://github.com/user-attachments/assets/ffd9a4cd-09eb-4213-8920-a0a613cfa24b" />
 
@@ -101,7 +101,7 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
 
 <img width="1237" height="1619" alt="Captura de pantalla 2025-07-30 150138" src="https://github.com/user-attachments/assets/cf87ecf1-e7f5-41d9-890f-86727575d3dc" />
 
-## 📝 Próximos Pasos (Posibles Mejoras)
+## 📝 Próximos Pasos (Posibles Mejoras) a desarrollar.
 
 *   **Agente de Consultas Unificado:** Finalizar y estabilizar el `Query Agent` como interfaz principal.
 *   **PoC de GraphRAG:** Mejorar la extracción de entidades para hacer el grafo más robusto y útil.
