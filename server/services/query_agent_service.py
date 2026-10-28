@@ -1,5 +1,5 @@
 from langchain_community.chat_models import ChatOllama
-from schemas.content import QueryAgentRequest
+from schemas.content import QueryAgentRequest, ContentGenerationRequest
 from services import generator_service
 from services import rag_service
 from core.config import settings
@@ -9,7 +9,7 @@ from traceback import format_exc
 class QueryAgentService:
     def __init__(self):
         logger.info("Initializing SIMPLEST Query Agent...")
-        ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
+        ollama_base_url = settings.OLLAMA_HOST
         self.llm = ChatOllama(model="llama3", temperature=0, base_url=ollama_base_url)
         logger.info("SIMPLEST Query Agent initialized.")
 
@@ -45,15 +45,45 @@ class QueryAgentService:
 
         elif "content_creation" in destination:
             logger.info("Executing Content Agent...")
-            from schemas.content import ContentGenerationRequest
+            
+            # Infer targeted platform(s) from question keywords, defaulting to blog
+            q_lower = request.question.lower()
+            target_platforms = []
+            if any(k in q_lower for k in ["tweet", "twitter", "x post", "on x"]):
+                target_platforms.append("X")
+            if any(k in q_lower for k in ["instagram", "insta", "ig post", "caption"]):
+                target_platforms.append("instagram")
+            if any(k in q_lower for k in ["blog", "article", "post", "essay"]) or not target_platforms:
+                if "blog" not in target_platforms:
+                    target_platforms.append("blog")
+
             content_request = ContentGenerationRequest(
                 topic=request.question,
+                platforms=target_platforms,
                 language=request.language,
                 company_info=request.company_info,
                 use_news_search=request.use_search
             )
             result = await generator_service.generate_content_service(content_request)
-            return str(result.get("generated_content", "Failed to generate content."))
+            generated = result.get("generated_content", {})
+
+            if isinstance(generated, dict):
+                sections = []
+                for platform_name, text in generated.items():
+                    platform_title = platform_name.upper() if platform_name.lower() == "x" else platform_name.capitalize()
+                    sections.append(f"### {platform_title}\n\n{text}")
+                response_text = "\n\n---\n\n".join(sections) if sections else "No content was generated."
+            elif isinstance(generated, str):
+                response_text = generated
+            else:
+                response_text = "Failed to generate content."
+
+            image_url = result.get("image_url")
+            if image_url:
+                image_alt = result.get("image_alt") or "Generated visual"
+                response_text += f"\n\n![{image_alt}]({image_url})"
+
+            return response_text
             
         else:
             logger.info("Routing to fallback.")

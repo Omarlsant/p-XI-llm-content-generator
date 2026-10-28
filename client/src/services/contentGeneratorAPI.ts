@@ -1,7 +1,5 @@
 // client/src/services/contentGeneratorAPI.ts
-
-// Fallback added for safety, in case the .env variable is not set.
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+import { API_BASE_URL } from './config';
 
 export interface GenerateContentPayload {
   topic: string;
@@ -19,9 +17,6 @@ export interface GeneratedContentResponse {
 }
 
 export const generateContent = async (payload: GenerateContentPayload): Promise<GeneratedContentResponse> => {
-  // --- THE ONLY CHANGE IS HERE ---
-  // The backend route was changed from `/api/v1/generate` to `/api/v1/content-agent`
-  // and the specific endpoint path is `/` at the end, which is optional in the fetch call.
   const fullUrl = `${API_BASE_URL}/api/v1/content-agent`;
   
   console.log("Sending ContentGen payload:", payload, "to URL:", fullUrl);
@@ -33,7 +28,6 @@ export const generateContent = async (payload: GenerateContentPayload): Promise<
   });
 
   if (!response.ok) {
-    // Providing a more helpful error for 404
     if (response.status === 404) {
       throw new Error(`Error: Not Found. The API endpoint at ${fullUrl} could not be reached. Please check the backend router configuration.`);
     }
@@ -43,7 +37,11 @@ export const generateContent = async (payload: GenerateContentPayload): Promise<
     throw new Error(errorData.detail || `Server error: ${response.statusText}`);
   }
 
-  return response.json();
+  try {
+    return await response.json();
+  } catch {
+    throw new Error('Received an invalid JSON response from the server.');
+  }
 };
 
 // --- RAG Functions (These are already correct, no changes needed) ---
@@ -61,13 +59,20 @@ export const queryVectorRAG = async (payload: RAGQueryPayload): Promise<RAGQuery
   });
 
   if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Error: Not Found. The API endpoint at ${fullUrl} could not be reached. Please check the backend router configuration.`);
+    }
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
     throw new Error(errorData.detail || `Server error: ${response.statusText}`);
   }
 
-  return response.json();
+  try {
+    return await response.json();
+  } catch {
+    throw new Error('Received an invalid JSON response from the server.');
+  }
 };
 
 export const queryGraphRAG = async (payload: RAGQueryPayload): Promise<RAGQueryResponse> => {
@@ -81,11 +86,18 @@ export const queryGraphRAG = async (payload: RAGQueryPayload): Promise<RAGQueryR
   });
 
   if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Error: Not Found. The API endpoint at ${fullUrl} could not be reached. Please check the backend router configuration.`);
+    }
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
     throw new Error(errorData.detail || `Server error: ${response.statusText}`);
   }
 
-  return response.json();
+  try {
+    return await response.json();
+  } catch {
+    throw new Error('Received an invalid JSON response from the server.');
+  }
 };

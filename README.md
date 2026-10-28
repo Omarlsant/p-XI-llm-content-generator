@@ -1,8 +1,8 @@
-# 🚀 Post GenerAItor: Un Asistente de Contenido con IA y Agentes Especializados
+# 🚀 Content GenerAItor: Un Asistente de Contenido con IA y Agentes Especializados
 
 
 
-**Post GenerAItor** es una aplicación full-stack desarrollada para explorar y demostrar las capacidades de los Grandes Modelos de Lenguaje (LLMs) y los patrones de IA modernos. La aplicación cuenta con múltiples agentes de IA especializados, cada uno diseñado para una tarea específica, desde la creación de contenido creativo hasta la investigación factual basada en documentos.
+**Content GenerAItor** es una aplicación full-stack desarrollada para explorar y demostrar las capacidades de los Grandes Modelos de Lenguaje (LLMs) y los patrones de IA modernos. La aplicación cuenta con múltiples agentes de IA especializados, cada uno diseñado para una tarea específica, desde la creación de contenido creativo hasta la investigación factual basada en documentos.
 
 ## ✨ Características Principales
 
@@ -79,14 +79,14 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
 4.  **Construye y levanta los contenedores:**
     Este comando construirá las imágenes y levantará el frontend y el backend.
     ```bash
-    docker-compose up --build
+    docker compose up --build
     ```
     La primera vez puede tardar unos minutos.
 
 5.  **Crea la base de conocimiento RAG:**
     En una **nueva terminal**, con los contenedores ya corriendo, ejecuta el script de ingesta de datos dentro del contenedor del backend:
     ```bash
-    docker-compose exec backend python server/scripts/ingest_data.py
+    docker compose exec backend python scripts/ingest_data.py
     ```
 
 6.  **¡Listo!**
