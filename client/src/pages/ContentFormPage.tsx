@@ -2,15 +2,11 @@ import { useState } from 'react';
 import { generateContent } from '../services/contentGeneratorAPI';
 import type { GenerateContentPayload } from '../services/contentGeneratorAPI';
 import type { GeneratedContentResponse } from '../services/contentGeneratorAPI';
+import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../constants/languages';
 import ReactMarkdown from 'react-markdown';
 
 const MODEL_OPTIONS = {
   'llama3': 'Llama 3 (Local)',
-};
-
-const LANGUAGE_OPTIONS = {
-  'English': 'English', 'Spanish': 'Spanish', 'French': 'French',
-  'German': 'German', 'Japanese': 'Japanese', 'Italian': 'Italian'
 };
 
 const ContentFormPage = () => {
@@ -18,7 +14,7 @@ const ContentFormPage = () => {
   const [platforms, setPlatforms] = useState({ blog: true, X: false, instagram: false });
   const [companyInfo, setCompanyInfo] = useState('');
   const [selectedModel, setSelectedModel] = useState<keyof typeof MODEL_OPTIONS>('llama3');
-  const [selectedLanguage, setSelectedLanguage] = useState<keyof typeof LANGUAGE_OPTIONS>('English');
+  const [selectedLanguage, setSelectedLanguage] = useState<SupportedLanguage>('English');
   const [useNewsSearch, setUseNewsSearch] = useState(false); // The state for the checkbox
 
   const [loading, setLoading] = useState(false);
@@ -80,8 +76,8 @@ const ContentFormPage = () => {
           <label htmlFor="companyInfo" className="block text-lg font-medium mb-2">Company / Brand Information <span className="text-sm text-slate-400">(Optional)</span></label>
           <textarea id="companyInfo" value={companyInfo} onChange={(e) => setCompanyInfo(e.target.value)} placeholder="Ex: We are a startup that sells eco-friendly coffee mugs..." className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500" rows={3} />
         </div>
-        <div>
-          <label className="block text-lg font-medium mb-3">Which platforms are you targeting?</label>
+        <fieldset>
+          <legend className="block text-lg font-medium mb-3">Which platforms are you targeting?</legend>
           <div className="flex flex-col sm:flex-row sm:space-x-6 space-y-3 sm:space-y-0">
             {Object.keys(platforms).map((platform) => (
               <label key={platform} htmlFor={platform} className="flex items-center cursor-pointer">
@@ -90,9 +86,9 @@ const ContentFormPage = () => {
               </label>
             ))}
           </div>
-        </div>
-        <div className="space-y-4">
-            <label className="block text-lg font-medium">Advanced Options</label>
+        </fieldset>
+        <fieldset className="space-y-4">
+            <legend className="block text-lg font-medium mb-2">Advanced Options</legend>
             <div className="relative flex items-start">
                 <div className="flex h-6 items-center">
                 <input
@@ -105,17 +101,17 @@ const ContentFormPage = () => {
                 />
                 </div>
                 <div className="ml-3 text-sm leading-6">
-                <label htmlFor="news-search" className="font-medium text-slate-200">Enable Live News Search</label>
+                <label htmlFor="news-search" className="font-medium text-slate-200 cursor-pointer">Enable Live News Search</label>
                 <p id="news-search-description" className="text-slate-400">
                     Slower, but uses real-time news for topics about current events or finance.
                 </p>
                 </div>
             </div>
-        </div>
+        </fieldset>
         <div>
           <label htmlFor="language-select" className="block text-lg font-medium mb-2">Select Language</label>
-          <select id="language-select" value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value as keyof typeof LANGUAGE_OPTIONS)} className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none bg-no-repeat bg-right pr-8" style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="rgb(156 163 175)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundPosition: 'right 0.75rem center' }}>
-            {Object.entries(LANGUAGE_OPTIONS).map(([value, label]) => (<option key={value} value={value}>{label}</option>))}
+          <select id="language-select" value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value as SupportedLanguage)} className="w-full p-3 rounded-md bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 appearance-none bg-no-repeat bg-right pr-8" style={{ backgroundImage: `url('data:image/svg+xml;utf8,<svg fill="rgb(156 163 175)" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')`, backgroundPosition: 'right 0.75rem center' }}>
+            {Object.entries(SUPPORTED_LANGUAGES).map(([value, label]) => (<option key={value} value={value}>{label}</option>))}
           </select>
         </div>
         <div>

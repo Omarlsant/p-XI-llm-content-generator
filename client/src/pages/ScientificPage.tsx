@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { queryVectorRAG, queryGraphRAG } from '../services/contentGeneratorAPI';
 
 type RAGMode = 'vector' | 'graph';
@@ -37,14 +38,18 @@ const ScientificPage = () => {
         Ask questions about indexed research papers using different retrieval methods.
       </p>
 
-      <div className="mb-6 flex justify-center bg-slate-800/50 p-1 rounded-lg border border-slate-700 w-fit mx-auto">
+      <div role="group" aria-label="RAG retrieval mode selection" className="mb-6 flex justify-center bg-slate-800/50 p-1 rounded-lg border border-slate-700 w-fit mx-auto">
         <button
+          type="button"
+          aria-pressed={ragMode === 'vector'}
           onClick={() => setRagMode('vector')}
           className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${ragMode === 'vector' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-700'}`}
         >
           Vector Search (with Guardrails)
         </button>
         <button
+          type="button"
+          aria-pressed={ragMode === 'graph'}
           onClick={() => setRagMode('graph')}
           className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${ragMode === 'graph' ? 'bg-sky-600 text-white shadow-md' : 'text-slate-300 hover:bg-slate-700'}`}
         >
@@ -81,8 +86,8 @@ const ScientificPage = () => {
       {result && (
         <div className="mt-10 bg-slate-800/50 p-8 rounded-xl border border-slate-700 animate-fade-in">
           <h2 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-sky-500">Assistant's Answer</h2>
-          <div className="text-slate-300 whitespace-pre-wrap leading-relaxed prose prose-invert max-w-none">
-            {result}
+          <div className="prose prose-invert max-w-none prose-headings:text-slate-100 prose-a:text-sky-400">
+            <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         </div>
       )}

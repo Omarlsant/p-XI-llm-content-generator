@@ -11,7 +11,7 @@ const Home = () => {
       <section className="text-center px-4">
         <AutoAwesome className="text-cyan-300 mx-auto h-28 w-28 mb-4 drop-shadow-[0_0_15px_rgba(78,204,222,0.5)]" />
         <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-b from-slate-100 to-slate-400 py-2">
-          Welcome to Post <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">GenerAItor</span>
+          Welcome to Content <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">GenerAItor</span>
         </h1>
         <p className="mt-6 max-w-2xl mx-auto text-lg text-slate-400 sm:text-xl">
           Automate your content creation. Generate engaging posts for blogs, X, and Instagram with the power of AI. Save time and elevate your digital presence.
@@ -51,7 +51,10 @@ const Home = () => {
 
       {/* --- TESTIMONIAL CAROUSEL SECTION --- */}
       <section className="w-full">
-        <h2 className="text-4xl font-bold text-center mb-12">What Our Users Say</h2>
+        <h2 className="text-4xl font-bold text-center mb-3">What Our Users Say</h2>
+        <p className="text-center text-slate-400 mb-12 max-w-xl mx-auto px-4 text-sm sm:text-base">
+          Illustrative use cases and simulated feedback demonstrating how Content GenerAItor streamlines real-world creator workflows.
+        </p>
         <TestimonialCarousel />
       </section>
 
