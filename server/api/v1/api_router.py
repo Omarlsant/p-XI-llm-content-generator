@@ -1,7 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from api.v1.endpoints import content_generator, scientific_rag, query_agent
+from core.rate_limit import rate_limiter
+from core.auth import verify_api_key
 
-api_router = APIRouter()
+api_router = APIRouter(
+    dependencies=[Depends(rate_limiter), Depends(verify_api_key)]
+)
 
 # Specialist Agent 1: The Content Generator
 api_router.include_router(
