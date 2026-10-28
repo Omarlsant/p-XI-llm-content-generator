@@ -129,7 +129,33 @@ const ContentFormPage = () => {
       {result && (
         <div className="mt-10 bg-slate-800/50 p-8 rounded-xl border border-slate-700 animate-fade-in">
           <h2 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Generated Results</h2>
-          {result.image_url && (<div className="mb-8 rounded-lg overflow-hidden shadow-lg"><img src={result.image_url} alt={result.image_alt || ''} className="w-full h-auto object-cover" /></div>)}
+          {result.image_url && (
+            <div className="mb-8 rounded-lg overflow-hidden shadow-lg bg-slate-900/60 p-2">
+              <img src={result.image_url} alt={result.image_alt || 'Generated article illustration'} className="w-full h-auto object-cover rounded-md" />
+              {result.image_photographer_name && result.image_photographer_url && (
+                <p className="text-xs text-slate-400 mt-2 text-center">
+                  Photo by{" "}
+                  <a
+                    href={result.image_photographer_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:underline focus:outline-none focus:ring-1 focus:ring-cyan-400 rounded"
+                  >
+                    {result.image_photographer_name}
+                  </a>{" "}
+                  on{" "}
+                  <a
+                    href="https://unsplash.com/?utm_source=ContentGenerAItor&utm_medium=referral"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-400 hover:underline focus:outline-none focus:ring-1 focus:ring-cyan-400 rounded"
+                  >
+                    Unsplash
+                  </a>
+                </p>
+              )}
+            </div>
+          )}
           {result.errors && Object.keys(result.errors).length > 0 && (
             <div className="mb-8 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300">
               <h4 className="font-semibold mb-2 flex items-center">

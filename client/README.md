@@ -1,69 +1,58 @@
-# React + TypeScript + Vite
+# Content GenerAItor — Frontend SPA
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interactive Single Page Application (SPA) for **Content GenerAItor**, designed for multi-platform AI content generation and scientific research retrieval.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Tech Stack
 
-## Expanding the ESLint configuration
+* **Framework:** React 19 + TypeScript 5.8
+* **Build Tool:** Vite 7 (powered by `@vitejs/plugin-react-swc` for fast refresh)
+* **Styling:** Tailwind CSS v4 + `@tailwindcss/typography` (`.prose` rendering)
+* **Routing:** React Router 7 (code-split with `React.lazy` and `Suspense`)
+* **Components:** Custom accessible UI components, Material UI Icons (`@mui/icons-material`), Embla Carousel
+* **Testing:** Node.js native test runner & Vitest compatibility harness
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📁 Project Structure
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+client/
+├── nginx.conf              # Production Nginx reverse proxy, gzip & caching headers
+├── Dockerfile              # Multi-stage production container build (Node 22 -> Nginx)
+├── package.json            # Scripts and dependencies
+├── vite.config.ts          # SWC React plugin, Tailwind CSS v4 and backend API proxy
+├── src/
+│   ├── components/         # Reusable UI controls (Navbar, Footer, RouteError, Marquee)
+│   ├── constants/          # Shared constants (SUPPORTED_LANGUAGES)
+│   ├── layout/             # Global layout wrapper
+│   ├── pages/              # Lazy-loaded views (Home, ContentForm, ContentQuery, Scientific, About, NotFound)
+│   ├── routes/             # Router configuration with code-splitting
+│   ├── services/           # Backend API integration clients (FastAPI endpoints)
+│   └── tests/              # Unit test suites (languages, API mocks, routing)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Available Scripts
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+In the `client/` directory, you can run:
+
+* `npm run dev`: Starts the local development server at `http://localhost:5173` with Fast Refresh and backend reverse proxy configured on `/api`.
+* `npm run build`: Typechecks with `tsc -b` and builds production-optimized, code-split assets into `dist/`.
+* `npm run lint`: Runs ESLint across all TypeScript and React files with zero warnings tolerance.
+* `npm test`: Runs the automated unit test suite.
+* `npm run preview`: Locally previews the production build.
+
+---
+
+## ⚙️ Environment Variables
+
+The frontend is designed to work with relative paths by default, proxying `/api` requests to the FastAPI backend without requiring manual configuration.
+
+If pointing to an external backend URL directly, configure `.env`:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000
 ```

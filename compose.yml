@@ -8,10 +8,12 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      # Monta tu código del backend para que los cambios se reflejen sin reconstruir
+      # Monta el código del backend para desarrollo
       - ./server:/app
       # Persiste la base de datos de Chroma fuera del contenedor
       - chroma_data:/app/chroma_db
+      # Persiste la caché de HuggingFace/modelos para evitar descargas repetidas
+      - hf_cache:/home/appuser/.cache/huggingface
     environment:
       - ENVIRONMENT=${ENVIRONMENT:-production}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
@@ -22,10 +24,15 @@ services:
       - LANGCHAIN_ENDPOINT=${LANGCHAIN_ENDPOINT}
       - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
       - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/api/v1/content-agent/health\")'"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     # Para que el backend pueda "ver" el Ollama corriendo en tu PC
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -40,9 +47,11 @@ services:
     ports:
       - "5173:80" # Mapea el puerto 80 del contenedor a 5173 en tu máquina
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
 
-# --- Named Volume for Data Persistence ---
+# --- Named Volumes for Data Persistence ---
 volumes:
   chroma_data:
+  hf_cache:

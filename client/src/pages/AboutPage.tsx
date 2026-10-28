@@ -17,6 +17,9 @@ const CreatorPhoto = () => (
     <img
       src={photoImg}
       alt="Portrait of the creator, Omar Lengua"
+      width={192}
+      height={192}
+      loading="lazy"
       className="w-full h-full object-cover rounded-full"
     />
   </div>

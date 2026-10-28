@@ -2,12 +2,12 @@ import asyncio
 import httpx
 import ollama
 import json
-from typing import Optional, List, Dict
+from typing import Optional, Dict
 from traceback import format_exc
 from fastapi import HTTPException
 
 # --- CORE LANGCHAIN IMPORTS ---
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from langchain_community.tools.tavily_search import TavilySearchResults
 
 from schemas.content import ContentGenerationRequest
@@ -27,7 +27,17 @@ async def find_relevant_image(topic: str) -> Optional[Dict[str, str]]:
             data = response.json()
             if data.get("results"):
                 image = data["results"][0]
-                return {"url": image["urls"]["regular"], "alt": image.get("alt_description", f"Image about {topic}")}
+                user_data = image.get("user", {})
+                photographer_name = user_data.get("name")
+                photographer_link = user_data.get("links", {}).get("html")
+                photographer_url = f"{photographer_link}?utm_source=ContentGenerAItor&utm_medium=referral" if photographer_link else None
+
+                return {
+                    "url": image["urls"]["regular"],
+                    "alt": image.get("alt_description", f"Image about {topic}"),
+                    "photographer_name": photographer_name,
+                    "photographer_url": photographer_url,
+                }
     except Exception as e:
         logger.error(f"Error fetching image: {e}", exc_info=True)
     return None
@@ -217,8 +227,11 @@ async def generate_content_service(request: ContentGenerationRequest) -> dict:
             content_dict[name] = res
             
     image_url, image_alt = (None, None)
+    image_photographer_name, image_photographer_url = (None, None)
     if isinstance(image_result, dict) and image_result:
         image_url, image_alt = image_result.get("url"), image_result.get("alt")
+        image_photographer_name = image_result.get("photographer_name")
+        image_photographer_url = image_result.get("photographer_url")
     elif isinstance(image_result, Exception):
         logger.warning(f"Image search failed: {image_result}")
 
@@ -229,5 +242,7 @@ async def generate_content_service(request: ContentGenerationRequest) -> dict:
         "errors": error_dict,
         "image_url": image_url,
         "image_alt": image_alt,
+        "image_photographer_name": image_photographer_name,
+        "image_photographer_url": image_photographer_url,
         "success": has_success
     }

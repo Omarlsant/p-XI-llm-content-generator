@@ -65,7 +65,6 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
     API_KEY=""
 
     # --- API Keys ---
-    GOOGLE_API_KEY="AIzaSy..."
     UNSPLASH_ACCESS_KEY="..."
     TAVILY_API_KEY="tvly-..."
     
@@ -89,7 +88,7 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
     ```
 
 4.  **Construye y levanta los contenedores:**
-    Este comando construirá las imágenes y levantará el frontend y el backend.
+    Este comando construirá las imágenes y levantará el frontend y el backend con healthcheck automático:
     ```bash
     docker compose up --build
     ```
@@ -107,13 +106,56 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
 
 ---
 
-## 🖼️ Galería (Screenshots)
+### 💻 Ejecución Local (Sin Docker)
 
+Si prefieres desarrollar en local sin contenedores:
 
+1. **Backend (FastAPI):**
+   ```bash
+   cd server
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt -r requirements-dev.txt
+   uvicorn main:app --reload --port 8000
+   ```
+   * *Ingesta RAG local:* `python scripts/ingest_data.py`
+   * *Tests:* `pytest tests/ -v`
+
+2. **Frontend (Vite + React):**
+   ```bash
+   cd client
+   npm install
+   npm run dev
+   ```
+   * *Tests:* `npm test`
+   * *Linter:* `npm run lint`
+   * *Build:* `npm run build`
+
+---
+
+## 🧪 Pruebas y Calidad Continua
+
+El repositorio cuenta con una suite completa de pruebas unitarias y de humo integradas en GitHub Actions:
+
+```bash
+# Frontend (7 tests unitarios en verde)
+npm --prefix client test -- --run
+
+# Backend (15 tests de humo y contratos en verde)
+cd server && pytest tests/ -v
+```
+
+---
+
+## 📄 Licencia y Atribución
+
+* **Licencia:** Este proyecto está bajo la licencia [MIT](LICENSE) © 2026 Omar Lengua.
+* **Atribución de Imágenes:** Las imágenes generadas utilizan la API oficial de [Unsplash](https://unsplash.com) y se muestran con la debida atribución al fotógrafo y enlace a su perfil, cumpliendo estrictamente con las directrices de la API de Unsplash.
+
+---
 
 ## 📝 Próximos Pasos (Posibles Mejoras)
 
-*   **Agente de Consultas Unificado:** Finalizar y estabilizar el `Query Agent` como interfaz principal.
-*   **PoC de GraphRAG:** Mejorar la extracción de entidades para hacer el grafo más robusto y útil.
-*   **Streaming de Respuestas:** Implementar streaming para que el texto de la IA aparezca palabra por palabra, mejorando la UX.
+*   **Streaming de Respuestas:** Implementar Server-Sent Events (SSE) para que el texto de la IA aparezca palabra por palabra, mejorando la UX.
+*   **Soporte Multi-Modelo:** Incorporar selección dinámica de modelos locales adicionales (`mistral`, `phi3`) vía Ollama.
 

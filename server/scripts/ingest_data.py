@@ -11,7 +11,13 @@ from langchain_community.vectorstores import Chroma
 DB_DIR = os.path.join(os.path.dirname(__file__), "..", "chroma_db")
 PDF_DIR = os.path.join(os.path.dirname(__file__), "temp_pdf")
 os.makedirs(PDF_DIR, exist_ok=True)
-embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+_embedding_function = None
+
+def get_embedding_function():
+    global _embedding_function
+    if _embedding_function is None:
+        _embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+    return _embedding_function
 
 # --- FIX: Hardcoded list of direct PDF links to famous RAG papers ---
 PAPER_URLS = [
@@ -93,7 +99,7 @@ def main():
     print(f"Creating new ChromaDB at: {DB_DIR}")
     db = Chroma.from_documents(
         documents=document_chunks, 
-        embedding=embedding_function,
+        embedding=get_embedding_function(),
         persist_directory=DB_DIR
     )
     print("--- Data Ingestion Complete ---")
