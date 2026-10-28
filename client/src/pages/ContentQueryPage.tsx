@@ -41,8 +41,9 @@ const ContentQueryPage = () => {
       const data = await invokeQueryAgent(payload);
       const aiMessage = { content: data.answer, type: 'ai' as const };
       setMessages(prev => [...prev, aiMessage]);
-    } catch (err: any) {
-      const errorMessage = { content: `Error: ${err.message || 'An unexpected error occurred.'}`, type: 'ai' as const };
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      const errorMessage = { content: `Error: ${errorMsg}`, type: 'ai' as const };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setLoading(false);
