@@ -29,7 +29,10 @@ export const invokeQueryAgent = async (payload: QueryAgentPayload): Promise<Quer
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
-    throw new Error(errorData.detail || `Server error: ${response.statusText}`);
+    const detailMessage = typeof errorData.detail === 'object' && errorData.detail !== null
+      ? (errorData.detail.message || JSON.stringify(errorData.detail))
+      : errorData.detail;
+    throw new Error(detailMessage || `Server error: ${response.statusText}`);
   }
 
   try {

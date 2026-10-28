@@ -36,7 +36,10 @@ export const generateContent = async (payload: GenerateContentPayload): Promise<
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
-    throw new Error(errorData.detail || `Server error: ${response.statusText}`);
+    const detailMessage = typeof errorData.detail === 'object' && errorData.detail !== null
+      ? (errorData.detail.message || JSON.stringify(errorData.detail))
+      : errorData.detail;
+    throw new Error(detailMessage || `Server error: ${response.statusText}`);
   }
 
   try {
@@ -67,7 +70,10 @@ export const queryVectorRAG = async (payload: RAGQueryPayload): Promise<RAGQuery
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
-    throw new Error(errorData.detail || `Server error: ${response.statusText}`);
+    const detailMessage = typeof errorData.detail === 'object' && errorData.detail !== null
+      ? (errorData.detail.message || JSON.stringify(errorData.detail))
+      : errorData.detail;
+    throw new Error(detailMessage || `Server error: ${response.statusText}`);
   }
 
   try {
@@ -94,7 +100,10 @@ export const queryGraphRAG = async (payload: RAGQueryPayload): Promise<RAGQueryR
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
-    throw new Error(errorData.detail || `Server error: ${response.statusText}`);
+    const detailMessage = typeof errorData.detail === 'object' && errorData.detail !== null
+      ? (errorData.detail.message || JSON.stringify(errorData.detail))
+      : errorData.detail;
+    throw new Error(detailMessage || `Server error: ${response.statusText}`);
   }
 
   try {

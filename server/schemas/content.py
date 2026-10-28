@@ -80,3 +80,12 @@ class RAGQueryRequest(BaseModel):
 
 class RAGQueryResponse(BaseModel):
     answer: str
+
+# --- System & Operational Schemas ---
+class RootResponse(BaseModel):
+    message: str
+
+class HealthResponse(BaseModel):
+    status: str = "ok"
+    message: Optional[str] = None
+
