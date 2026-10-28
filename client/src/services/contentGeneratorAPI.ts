@@ -12,8 +12,10 @@ export interface GenerateContentPayload {
 
 export interface GeneratedContentResponse {
   generated_content: { [key: string]: string; };
+  errors?: { [key: string]: string; };
   image_url: string | null;
   image_alt: string | null;
+  success?: boolean;
 }
 
 export const generateContent = async (payload: GenerateContentPayload): Promise<GeneratedContentResponse> => {

@@ -1,0 +1,26 @@
+# Retrieval-Augmented Generation (RAG) Knowledge Base
+
+Retrieval-Augmented Generation (RAG) is an artificial intelligence framework proposed by Lewis et al. in 2020. RAG combines pre-trained parametric memory (large language models) with non-parametric memory (external vector indexes).
+
+In a standard RAG pipeline, external documents are ingested, split into smaller semantic chunks, and encoded into dense vector embeddings using models such as SentenceTransformers. These embeddings are stored in a vector database like ChromaDB or FAISS.
+
+When a user submits a query, a dense retriever calculates semantic similarity to retrieve the top-k most relevant chunks. The generator LLM receives both the retrieved context and the user query to synthesize a grounded response.
+
+To safeguard against hallucinations, guardrail evaluators assess whether the generated response is strictly grounded in the retrieved context.
+
+GraphRAG extends vector RAG by extracting entities and relationships into a structured knowledge graph, enabling multi-hop reasoning across interconnected concepts.
+
+# Foundational Concept Relationships
+(Retrieval-Augmented Generation, proposed by, Lewis et al.)
+(RAG framework, combines, Parametric Memory and Non-Parametric Memory)
+(Non-Parametric Memory, utilizes, Vector Database)
+(Vector Database, stores, Dense Vector Embeddings)
+(ChromaDB, implements, Vector Storage)
+(SentenceTransformers, produces, Semantic Embeddings)
+(Dense Retriever, searches, Semantic Chunks)
+(Generator LLM, synthesizes, Grounded Answers)
+(Guardrails, assesses, Answer Faithfulness)
+(Guardrails, mitigates, LLM Hallucinations)
+(GraphRAG, constructs, Knowledge Graph)
+(Knowledge Graph, connects, Entities and Relationships)
+(GraphRAG, enables, Multi-Hop Reasoning)

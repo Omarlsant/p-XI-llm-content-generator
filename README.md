@@ -29,7 +29,7 @@ Este proyecto fue construido priorizando la velocidad de desarrollo y las herram
 
 *   **Frontend:** React, Vite, TypeScript, Tailwind CSS
 *   **Backend:** FastAPI (Python)
-*   **LLMs:** Ollama (`llama3`), Google Gemini
+*   **LLMs:** Ollama (`llama3`)
 *   **Frameworks de IA:** LangChain, LangSmith
 *   **Bases de Datos Vectoriales:** ChromaDB
 *   **Herramientas de Agente:** Tavily Search API

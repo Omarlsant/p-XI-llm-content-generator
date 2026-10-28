@@ -6,7 +6,6 @@ import ReactMarkdown from 'react-markdown';
 
 const MODEL_OPTIONS = {
   'llama3': 'Llama 3 (Local)',
-  'gemini-1.5-flash': 'Gemini 1.5 Flash (Google)',
 };
 
 const LANGUAGE_OPTIONS = {
@@ -57,8 +56,9 @@ const ContentFormPage = () => {
     try {
       const data = await generateContent(payload);
       setResult(data);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      setError(message);
     } finally { 
       setLoading(false); 
     }
@@ -134,6 +134,20 @@ const ContentFormPage = () => {
         <div className="mt-10 bg-slate-800/50 p-8 rounded-xl border border-slate-700 animate-fade-in">
           <h2 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Generated Results</h2>
           {result.image_url && (<div className="mb-8 rounded-lg overflow-hidden shadow-lg"><img src={result.image_url} alt={result.image_alt || ''} className="w-full h-auto object-cover" /></div>)}
+          {result.errors && Object.keys(result.errors).length > 0 && (
+            <div className="mb-8 p-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-300">
+              <h4 className="font-semibold mb-2 flex items-center">
+                <span>⚠️ Partial Generation Warnings</span>
+              </h4>
+              <ul className="list-disc list-inside space-y-1 text-sm">
+                {Object.entries(result.errors).map(([platform, err]) => (
+                  <li key={platform}>
+                    <strong className="capitalize">{platform}:</strong> {err}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {Object.entries(result.generated_content).map(([platform, content]) => (
             <div key={platform} className="mb-8 last:mb-0">
               <h3 className="text-2xl font-semibold capitalize mb-4 border-b-2 border-slate-700 pb-2 text-cyan-400">{platform}</h3>

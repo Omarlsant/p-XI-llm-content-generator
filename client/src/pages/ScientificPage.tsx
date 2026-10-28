@@ -21,8 +21,8 @@ const ScientificPage = () => {
         ? await queryVectorRAG({ question })
         : await queryGraphRAG({ question });
       setResult(data.answer);
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred.');
     } finally {
       setLoading(false);
     }
