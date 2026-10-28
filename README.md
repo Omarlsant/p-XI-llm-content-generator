@@ -55,6 +55,13 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
     ```
     Edita `.env` con tus credenciales:
     ```.env
+    # --- Configuración General y Seguridad ---
+    ENVIRONMENT="production"
+    LOG_LEVEL="INFO"
+    CORS_ORIGINS="http://localhost:5173,http://localhost"
+    RATE_LIMIT_PER_MINUTE="60"
+    API_KEY=""
+
     # --- API Keys ---
     GOOGLE_API_KEY="AIzaSy..."
     UNSPLASH_ACCESS_KEY="..."
@@ -63,12 +70,15 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
     # --- Ollama Hosts (para Docker) ---
     OLLAMA_HOST="http://host.docker.internal:11434"
     
-    # --- LangSmith Configuration ---
+    # --- LangSmith Configuration (Opcional) ---
     LANGCHAIN_TRACING_V2="false"
     LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
     LANGCHAIN_API_KEY="ls__..."
     LANGCHAIN_PROJECT="GenerAItor Sprint"
     ```
+
+    > [!WARNING]
+    > **Aviso de Privacidad y Gobernanza de Datos:** Al activar LangSmith (`LANGCHAIN_TRACING_V2="true"`), los prompts, entradas de usuario (incluyendo datos de empresa en `company_info`) y respuestas generadas se enviarán a los servidores de LangSmith para observabilidad. Mantén `false` por defecto si manejas datos sensibles.
 
 3.  **Asegúrate de que Ollama esté corriendo:**
     Este setup asume que tienes [Ollama](https://ollama.com/) instalado y corriendo en tu máquina anfitriona (fuera de Docker). Asegúrate de tener el modelo `llama3` descargado:

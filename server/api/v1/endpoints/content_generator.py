@@ -8,7 +8,8 @@ router = APIRouter()
 @router.post("", response_model=ContentGenerationResponse)
 @router.post("/", response_model=ContentGenerationResponse) 
 async def generate_content(request: ContentGenerationRequest):
-    logger.info(f"Endpoint: Received request for topic '{request.topic}', lang '{request.language}'")
+    logger.info(f"Endpoint: Received generation request (platforms={request.platforms}, lang={request.language}, topic_length={len(request.topic)})")
+    logger.debug(f"Topic content: {request.topic}")
     
     try:
         response_data = await generator_service.generate_content_service(request)

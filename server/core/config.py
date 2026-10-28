@@ -1,4 +1,5 @@
 import os
+from typing import List
 from dotenv import load_dotenv
 
 # Load environment variables.
@@ -7,11 +8,26 @@ load_dotenv()
 # Define a settings class to hold configuration values.
 class Settings:
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "production")
-    APP_NAME: str = os.getenv("APP_NAME", "FastAPI App")
-    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY")
-    UNSPLASH_ACCESS_KEY: str = os.getenv("UNSPLASH_ACCESS_KEY")
-    TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY")
+    APP_NAME: str = os.getenv("APP_NAME", "Content GenerAItor")
+    
+    # External APIs
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
+    UNSPLASH_ACCESS_KEY: str = os.getenv("UNSPLASH_ACCESS_KEY", "")
+    TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
+    
+    # Ollama Host
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST") or "http://localhost:11434"
+    
+    # Logging and Observability
+    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO" if os.getenv("ENVIRONMENT", "production") == "production" else "DEBUG").upper()
+    
+    # CORS Configuration
+    _cors_raw: str = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://localhost,http://127.0.0.1:5173")
+    CORS_ORIGINS: List[str] = [origin.strip() for origin in _cors_raw.split(",") if origin.strip()]
+    
+    # Rate Limiting & Authentication
+    RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
+    API_KEY: str = os.getenv("API_KEY", "").strip()
 
 # Create an instance of the Settings class.
 settings = Settings()
