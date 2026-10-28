@@ -1,14 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { invokeQueryAgent } from '../services/queryAgentAPI';
+import { invokeQueryAgent, type QueryAgentPayload } from '../services/queryAgentAPI';
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from '../constants/languages';
 import ReactMarkdown from 'react-markdown';
-
-type QueryAgentPayload = {
-  question: string;
-  language: string;
-  use_search: boolean;
-  company_info: string;
-};
 
 const ContentQueryPage = () => {
   const [input, setInput] = useState('');

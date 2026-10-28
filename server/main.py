@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.config import settings
 from api.v1.api_router import api_router
 from core.log_config import logger
+from schemas.content import RootResponse
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -35,7 +36,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "X-API-Key"],
 )
 
-@app.get("/")
+@app.get("/", response_model=RootResponse)
 def read_root():
     logger.info("Root endpoint was hit.")
     return {"message": f"Welcome to {settings.APP_NAME}"}
