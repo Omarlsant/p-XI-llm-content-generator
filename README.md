@@ -49,7 +49,11 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
     ```
 
 2.  **Configura tus claves de API:**
-    Crea un archivo `.env` en la raíz del proyecto y rellenar tus claves:
+    Copia el archivo `.env.example` como `.env` en la raíz del proyecto y completa tus claves:
+    ```bash
+    cp .env.example .env
+    ```
+    Edita `.env` con tus credenciales:
     ```.env
     # --- API Keys ---
     GOOGLE_API_KEY="AIzaSy..."
@@ -57,10 +61,10 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
     TAVILY_API_KEY="tvly-..."
     
     # --- Ollama Hosts (para Docker) ---
-    OLLAMA_DOCKER_HOST="http://host.docker.internal:11434"
+    OLLAMA_HOST="http://host.docker.internal:11434"
     
     # --- LangSmith Configuration ---
-    LANGCHAIN_TRACING_V2="true"
+    LANGCHAIN_TRACING_V2="false"
     LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
     LANGCHAIN_API_KEY="ls__..."
     LANGCHAIN_PROJECT="GenerAItor Sprint"
