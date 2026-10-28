@@ -15,6 +15,8 @@ export interface GeneratedContentResponse {
   errors?: { [key: string]: string; };
   image_url: string | null;
   image_alt: string | null;
+  image_photographer_name?: string | null;
+  image_photographer_url?: string | null;
   success?: boolean;
 }
 
