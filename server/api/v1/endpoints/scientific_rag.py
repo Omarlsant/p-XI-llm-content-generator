@@ -19,9 +19,8 @@ async def query_rag_endpoint(
     try:
         answer = await rag_service.query(request.question)
         return {"answer": answer}
-    except FileNotFoundError as e:
-        logger.error(f"RAG database not found: {e}")
-        raise HTTPException(status_code=503, detail="The RAG knowledge base is not available.")
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error in RAG endpoint: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to process RAG query.")
@@ -39,6 +38,8 @@ async def query_graph_rag_endpoint(
     try:
         answer = await graph_rag_service.query(request.question)
         return {"answer": answer}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Error in Graph RAG endpoint: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to process Graph RAG query.")
