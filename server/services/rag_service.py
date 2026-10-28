@@ -15,7 +15,16 @@ from core.log_config import logger
 # --- Configuration & Helpers ---
 DB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "chroma_db")
 KNOWLEDGE_BASE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "knowledge_base", "rag_concepts.txt")
-embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+
+_embedding_function = None
+
+def get_embedding_function():
+    """Lazily loads and returns the shared embedding function on first demand."""
+    global _embedding_function
+    if _embedding_function is None:
+        logger.info("Initializing SentenceTransformerEmbeddings (all-MiniLM-L6-v2)...")
+        _embedding_function = SentenceTransformerEmbeddings(model_name="all-MiniLM-L6-v2")
+    return _embedding_function
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
@@ -27,7 +36,7 @@ class RAGService:
         ollama_base_url = settings.OLLAMA_HOST
         logger.info(f"RAGService connecting to Ollama at: {ollama_base_url}")
 
-        self.vectorstore = Chroma(persist_directory=DB_DIR, embedding_function=embedding_function)
+        self.vectorstore = Chroma(persist_directory=DB_DIR, embedding_function=get_embedding_function())
         self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 5})
         self.llm = ChatOllama(model="llama3", temperature=0.2, base_url=ollama_base_url)
         self.grading_llm = ChatOllama(model="llama3", format="json", temperature=0, base_url=ollama_base_url)

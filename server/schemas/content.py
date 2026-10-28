@@ -42,6 +42,8 @@ class ContentGenerationResponse(BaseModel):
     errors: Dict[str, str] = Field(default_factory=dict)
     image_url: Optional[str] = None
     image_alt: Optional[str] = None
+    image_photographer_name: Optional[str] = None
+    image_photographer_url: Optional[str] = None
     success: bool = True
 
 # --- Query Agent Schemas ---
