@@ -1,5 +1,5 @@
 // client/src/services/queryAgentAPI.ts
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL } from './config';
 
 export interface QueryAgentPayload {
   question: string;
@@ -23,11 +23,18 @@ export const invokeQueryAgent = async (payload: QueryAgentPayload): Promise<Quer
   });
 
   if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Error: Not Found. The API endpoint at ${fullUrl} could not be reached. Please check the backend router configuration.`);
+    }
     const errorData = await response.json().catch(() => ({
       detail: 'The server responded with an unexpected format.',
     }));
     throw new Error(errorData.detail || `Server error: ${response.statusText}`);
   }
 
-  return response.json();
+  try {
+    return await response.json();
+  } catch {
+    throw new Error('Received an invalid JSON response from the server.');
+  }
 };

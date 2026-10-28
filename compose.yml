@@ -20,7 +20,7 @@ services:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
       - TAVILY_API_KEY=${TAVILY_API_KEY}
-      - OLLAMA_HOST=${OLLAMA_HOST}
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://host.docker.internal:11434}
     # Para que el backend pueda "ver" el Ollama corriendo en tu PC
     extra_hosts:
       - "host.docker.internal:host-gateway"

@@ -248,7 +248,7 @@ def get_platform_constraints(platform: str) -> str:
 async def generate_content_with_agent(platform: str, topic: str, company_info: Optional[str], language: str, use_search: bool, **kwargs) -> str:
     logger.info(f"Using MANUAL AGENT for '{platform}'")
     
-    ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
+    ollama_base_url = settings.OLLAMA_HOST
     planner_llm = ChatOllama(model="llama3", temperature=0, base_url=ollama_base_url, format="json")
     writer_llm = ChatOllama(model="llama3", temperature=0.2, base_url=ollama_base_url)
     

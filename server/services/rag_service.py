@@ -22,7 +22,7 @@ class RAGService:
         logger.info("Initializing RAGService with Guardrails...")
         if not os.path.exists(DB_DIR): raise FileNotFoundError(f"ChromaDB not found. Please run ingestion script.")
         
-        ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
+        ollama_base_url = settings.OLLAMA_HOST
         logger.info(f"RAGService connecting to Ollama at: {ollama_base_url}")
 
         self.vectorstore = Chroma(persist_directory=DB_DIR, embedding_function=embedding_function)
@@ -72,7 +72,7 @@ class GraphRAGService:
         logger.info("Initializing GraphRAGService with clean knowledge base...")
         self.graph = nx.Graph()
 
-        ollama_base_url = settings.OLLAMA_HOST or "http://localhost:11434"
+        ollama_base_url = settings.OLLAMA_HOST
         logger.info(f"GraphRAGService connecting to Ollama at: {ollama_base_url}")
         self.llm_extractor = ChatOllama(model="llama3", temperature=0, base_url=ollama_base_url)
         
