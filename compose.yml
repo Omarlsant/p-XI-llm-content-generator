@@ -13,6 +13,11 @@ services:
       # Persiste la base de datos de Chroma fuera del contenedor
       - chroma_data:/app/chroma_db
     environment:
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5173,http://localhost}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+      - API_KEY=${API_KEY:-}
       - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2}
       - LANGCHAIN_ENDPOINT=${LANGCHAIN_ENDPOINT}
       - LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
