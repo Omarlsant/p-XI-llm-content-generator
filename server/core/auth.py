@@ -10,7 +10,7 @@ async def verify_api_key(x_api_key: Optional[str] = Header(None, alias="X-API-Ke
     """
     configured_key = getattr(settings, "API_KEY", "").strip()
     if not configured_key:
-        return
+        return None
 
     if not x_api_key or x_api_key != configured_key:
         logger.warning("Unauthorized request: missing or invalid X-API-Key")
@@ -18,3 +18,5 @@ async def verify_api_key(x_api_key: Optional[str] = Header(None, alias="X-API-Ke
             status_code=401,
             detail="Invalid or missing API key. Include a valid 'X-API-Key' header."
         )
+
+    return configured_key

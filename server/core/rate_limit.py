@@ -16,38 +16,54 @@ class InMemoryRateLimiter:
         self._records = defaultdict(list)
         self._lock = asyncio.Lock()
 
+    def is_allowed(self, client_ip: str) -> bool:
+        """Check if request from client IP is allowed within the rate limit window."""
+        rpm = self.requests_per_minute
+        if rpm <= 0:
+            return True
+        now = time.time()
+        history = self._records[client_ip]
+        valid_history = [t for t in history if now - t < self.window_seconds]
+        if len(valid_history) >= rpm:
+            self._records[client_ip] = valid_history
+            return False
+        valid_history.append(now)
+        self._records[client_ip] = valid_history
+        return True
+
+    def get_retry_after(self, client_ip: str) -> int:
+        """Calculate seconds until client can retry after being rate limited."""
+        now = time.time()
+        history = self._records.get(client_ip, [])
+        valid_history = [t for t in history if now - t < self.window_seconds]
+        if not valid_history:
+            return 0
+        oldest = valid_history[0]
+        return max(1, int(self.window_seconds - (now - oldest)))
+
     async def __call__(self, request: Request):
         # Only rate limit mutating/expensive operations (POST requests)
         if request.method != "POST":
             return
 
-        rpm = getattr(settings, "RATE_LIMIT_PER_MINUTE", self.requests_per_minute)
+        rpm = self.requests_per_minute
         if rpm <= 0:
             return  # Rate limiting disabled
 
         client_ip = request.client.host if request.client else "unknown"
-        now = time.time()
 
         async with self._lock:
-            history = self._records[client_ip]
-            # Prune records older than 60 seconds
-            valid_history = [t for t in history if now - t < self.window_seconds]
-
-            if len(valid_history) >= rpm:
-                oldest = valid_history[0]
-                retry_after = max(1, int(self.window_seconds - (now - oldest)))
+            if not self.is_allowed(client_ip):
+                retry_after = self.get_retry_after(client_ip)
                 logger.warning(
                     f"Rate limit exceeded for client IP: {client_ip} "
-                    f"({len(valid_history)} requests in 60s window, max {rpm})"
+                    f"({len(self._records[client_ip])} requests in 60s window, max {rpm})"
                 )
                 raise HTTPException(
                     status_code=429,
                     detail=f"Rate limit exceeded: maximum {rpm} requests per minute allowed.",
                     headers={"Retry-After": str(retry_after)}
                 )
-
-            valid_history.append(now)
-            self._records[client_ip] = valid_history
 
 # Singleton instance for dependency injection
 rate_limiter = InMemoryRateLimiter(settings.RATE_LIMIT_PER_MINUTE)
