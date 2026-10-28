@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from schemas.content import ContentGenerationRequest, ContentGenerationResponse
+from schemas.content import ContentGenerationRequest, ContentGenerationResponse, HealthResponse
 from services import generator_service 
 from core.log_config import logger
 
@@ -26,7 +26,7 @@ async def generate_content(request: ContentGenerationRequest):
         logger.error(f"Error in generation endpoint: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="An unexpected server error occurred.")
     
-@router.get("/health", response_model=dict)
+@router.get("/health", response_model=HealthResponse)
 async def health_check():
     """
     Health check endpoint to verify the service is running.

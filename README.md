@@ -1,5 +1,7 @@
 # 🚀 Content GenerAItor: Un Asistente de Contenido con IA y Agentes Especializados
 
+[![CI Pipeline](https://github.com/Omarlsant/p-XI-llm-content-generator/actions/workflows/ci.yml/badge.svg)](https://github.com/Omarlsant/p-XI-llm-content-generator/actions/workflows/ci.yml)
+
 
 
 **Content GenerAItor** es una aplicación full-stack desarrollada para explorar y demostrar las capacidades de los Grandes Modelos de Lenguaje (LLMs) y los patrones de IA modernos. La aplicación cuenta con múltiples agentes de IA especializados, cada uno diseñado para una tarea específica, desde la creación de contenido creativo hasta la investigación factual basada en documentos.
