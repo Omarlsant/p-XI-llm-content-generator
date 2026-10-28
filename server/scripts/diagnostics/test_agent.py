@@ -1,4 +1,12 @@
-# test_agent.py
+"""
+Diagnostic Script: Tavily Search Agent Connectivity
+
+NOTE: This is a manual diagnostic tool, NOT an automated test.
+It requires active internet connectivity and a valid TAVILY_API_KEY in .env.
+
+Usage:
+    python server/scripts/diagnostics/test_agent.py
+"""
 import os
 from dotenv import load_dotenv
 

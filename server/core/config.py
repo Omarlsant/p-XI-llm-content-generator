@@ -1,19 +1,22 @@
 import os
-from typing import List
-from dotenv import load_dotenv
+from typing import List, Optional
 
-# Load environment variables.
-load_dotenv()
+# Load environment variables if python-dotenv is available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 # Define a settings class to hold configuration values.
 class Settings:
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "production")
     APP_NAME: str = os.getenv("APP_NAME", "Content GenerAItor")
     
-    # External APIs
-    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
-    UNSPLASH_ACCESS_KEY: str = os.getenv("UNSPLASH_ACCESS_KEY", "")
-    TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
+    # External APIs (Optional strings)
+    GOOGLE_API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY") or None
+    UNSPLASH_ACCESS_KEY: Optional[str] = os.getenv("UNSPLASH_ACCESS_KEY") or None
+    TAVILY_API_KEY: Optional[str] = os.getenv("TAVILY_API_KEY") or None
     
     # Ollama Host
     OLLAMA_HOST: str = os.getenv("OLLAMA_HOST") or "http://localhost:11434"

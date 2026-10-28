@@ -15,7 +15,7 @@ from core.config import settings
 from core.log_config import logger
 
 
-async def find_relevant_image(topic: str) -> Optional[dict]:
+async def find_relevant_image(topic: str) -> Optional[Dict[str, str]]:
     if not settings.UNSPLASH_ACCESS_KEY:
         return None
     url, params = "https://api.unsplash.com/search/photos", {"query": topic, "per_page": 1, "orientation": "landscape"}
