@@ -18,7 +18,7 @@ class InMemoryRateLimiter:
 
     def is_allowed(self, client_ip: str) -> bool:
         """Check if request from client IP is allowed within the rate limit window."""
-        rpm = getattr(settings, "RATE_LIMIT_PER_MINUTE", self.requests_per_minute)
+        rpm = self.requests_per_minute
         if rpm <= 0:
             return True
         now = time.time()
@@ -46,7 +46,7 @@ class InMemoryRateLimiter:
         if request.method != "POST":
             return
 
-        rpm = getattr(settings, "RATE_LIMIT_PER_MINUTE", self.requests_per_minute)
+        rpm = self.requests_per_minute
         if rpm <= 0:
             return  # Rate limiting disabled
 
