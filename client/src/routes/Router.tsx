@@ -6,11 +6,14 @@ import AboutPage from "../pages/AboutPage";
 import ScientificPage from "../pages/ScientificPage";
 import ContentFormPage from "../pages/ContentFormPage";
 import ContentQueryPage from "../pages/ContentQueryPage";
+import NotFoundPage from "../pages/NotFoundPage";
+import RouteError from "../components/RouteError";
 
 export const router = createBrowserRouter([
     {
         path: "/",
         element: <Layout />,
+        errorElement: <RouteError />,
         children: [
             {
                 index: true,
@@ -35,6 +38,10 @@ export const router = createBrowserRouter([
             {
                 path: "/about",
                 element: <AboutPage />
+            },
+            {
+                path: "*",
+                element: <NotFoundPage />
             }
         ]
     }

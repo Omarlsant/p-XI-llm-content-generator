@@ -1,6 +1,4 @@
 // src/components/Footer.tsx
-
-// Make sure Link is imported from react-router-dom
 import { Link } from 'react-router-dom';
 import { GitHub as GitHubIcon, LinkedIn as LinkedInIcon, MailOutline as MailIcon } from '@mui/icons-material';
 
@@ -12,21 +10,25 @@ const Footer = () => {
           
           <div>
             <h3 className="text-2xl font-bold mb-3 bg-clip-text text-transparent bg-gray-50">
-                Post
+                Content
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500"> GenerAItor</span>
             </h3>
             <p className="text-slate-400 max-w-xs mx-auto md:mx-0">
-              An AI tool to automate and supercharge digital content creation.
+              An AI-powered multi-agent suite to automate and elevate digital content creation and scientific inquiry.
             </p>
           </div>
 
           <div>
             <h4 className="text-lg font-semibold text-cyan-400 mb-4 tracking-wider uppercase">Navigation</h4>
             <ul className="space-y-3 text-slate-300">
-              {/* --- CORRECTED INTERNAL LINKS --- */}
               <li>
                 <Link to="/generate" className="hover:text-violet-400 transition-colors">
-                  Generator
+                  Our Agents
+                </Link>
+              </li>
+              <li>
+                <Link to="/scientific-rag" className="hover:text-violet-400 transition-colors">
+                  Scientific RAG
                 </Link>
               </li>
               <li>
@@ -34,10 +36,14 @@ const Footer = () => {
                   About the Project
                 </Link>
               </li>
-              {/* This is an external link, so <a> is correct here */}
               <li>
-                <a href="https://medium.com/@your-username" target="_blank" rel="noopener noreferrer" className="hover:text-violet-400 transition-colors">
-                  Medium Article
+                <a
+                  href="https://github.com/Omarlsant/p-XI-llm-content-generator#readme"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-violet-400 transition-colors"
+                >
+                  Documentation
                 </a>
               </li>
             </ul>
@@ -46,13 +52,29 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold text-cyan-400 mb-4 tracking-wider uppercase">Connect With Me</h4>
             <div className="flex justify-center md:justify-start space-x-6">
-              <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-400 hover:scale-110 transition-all">
+              <a
+                href="https://github.com/Omarlsant/p-XI-llm-content-generator"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub Repository"
+                className="text-slate-400 hover:text-cyan-400 hover:scale-110 transition-all p-2 rounded-lg"
+              >
                 <GitHubIcon fontSize="large" />
               </a>
-              <a href="https://linkedin.com/in/your-profile" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-cyan-400 hover:scale-110 transition-all">
+              <a
+                href="https://www.linkedin.com/in/omarlsant/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn Profile"
+                className="text-slate-400 hover:text-cyan-400 hover:scale-110 transition-all p-2 rounded-lg"
+              >
                 <LinkedInIcon fontSize="large" />
               </a>
-              <a href="mailto:your-email@example.com" className="text-slate-400 hover:text-cyan-400 hover:scale-110 transition-all">
+              <a
+                href="mailto:98744809+Omarlsant@users.noreply.github.com"
+                aria-label="Send email to Omar Lengua"
+                className="text-slate-400 hover:text-cyan-400 hover:scale-110 transition-all p-2 rounded-lg"
+              >
                 <MailIcon fontSize="large" />
               </a>
             </div>

@@ -10,15 +10,13 @@ import {
   CloudQueue
 } from '@mui/icons-material';
 import TechLogo from '../components/TechLogo';
-import photoImg from '../assets/photo.jpg'; // Make sure to replace with your actual photo path
+import photoImg from '../assets/photo.jpg';
 
-
-// Placeholder for your photo
-const YourPhoto = () => (
-  <div className="w-48 h-48 bg-gradient-to-br from-cyan-500 to-violet-600 rounded-full mx-auto shadow-lg">
+const CreatorPhoto = () => (
+  <div className="w-48 h-48 bg-gradient-to-br from-cyan-500 to-violet-600 rounded-full mx-auto shadow-lg p-1">
     <img
       src={photoImg}
-      alt="Your Name"
+      alt="Portrait of the creator, Omar Lengua"
       className="w-full h-full object-cover rounded-full"
     />
   </div>
@@ -33,39 +31,51 @@ const About = () => {
         <h1 className="text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-slate-100 to-slate-400 py-2">
           Beyond the Blank Page
         </h1>
-        <p className="mt-4 text-2xl font-semibold text-violet-400">Our Mission and the 'Why' Behind Post GenerAItor</p>
+        <p className="mt-4 text-2xl font-semibold text-violet-400">Our Mission and the 'Why' Behind Content GenerAItor</p>
       </section>
 
       {/* --- Section 2: The Problem --- */}
       <section>
         <h2 className="text-4xl font-bold text-center mb-12">The Creator's Dilemma</h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center">
-            <HourglassEmpty className="text-cyan-400 h-16 w-16 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">The Time Sink</h3>
-            <p className="text-slate-400">Brainstorming, drafting, and tailoring content for different platforms can consume an entire day's work. Quality content demands significant time investment.</p>
-            <p className="text-5xl font-extrabold text-cyan-400 mt-6">8+</p>
-            <p className="text-slate-500 font-semibold">Hours per week on average</p>
+          <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center flex flex-col justify-between">
+            <div>
+              <HourglassEmpty className="text-cyan-400 h-16 w-16 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold mb-2">The Time Sink</h3>
+              <p className="text-slate-400">Brainstorming, drafting, and tailoring content for different platforms can consume an entire day's work. Quality content demands significant time investment.</p>
+            </div>
+            <div className="mt-6 border-t border-slate-700/60 pt-4">
+              <p className="text-3xl font-extrabold text-cyan-400">Hours Saved</p>
+              <p className="text-slate-400 text-sm mt-1">Reduces repetitive drafting cycles across channels</p>
+            </div>
           </div>
-          <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center">
-            <LightbulbOutlined className="text-cyan-400 h-16 w-16 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">Creative Burnout</h3>
-            <p className="text-slate-400">The constant pressure to be original and engaging leads to writer's block. Inspiration is a finite resource that needs to be managed carefully.</p>
-            <p className="text-5xl font-extrabold text-cyan-400 mt-6">72%</p>
-            <p className="text-slate-500 font-semibold">of creators report burnout</p>
+          <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center flex flex-col justify-between">
+            <div>
+              <LightbulbOutlined className="text-cyan-400 h-16 w-16 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold mb-2">Creative Burnout</h3>
+              <p className="text-slate-400">The constant pressure to be original and engaging leads to writer's block. Inspiration is a finite resource that needs to be managed carefully.</p>
+            </div>
+            <div className="mt-6 border-t border-slate-700/60 pt-4">
+              <p className="text-3xl font-extrabold text-cyan-400">Creative Flow</p>
+              <p className="text-slate-400 text-sm mt-1">Overcomes writer's block and ideation hurdles</p>
+            </div>
           </div>
-          <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center">
-            <DynamicFeed className="text-cyan-400 h-16 w-16 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-2">Platform Fatigue</h3>
-            <p className="text-slate-400">A great blog post doesn't work as a tweet. A good Instagram caption is different. Adapting a single idea for multiple channels is repetitive and draining.</p>
-            <p className="text-5xl font-extrabold text-cyan-400 mt-6">3x</p>
-            <p className="text-slate-500 font-semibold">the effort for 3 platforms</p>
+          <div className="bg-slate-800/50 p-8 rounded-xl border border-slate-700 text-center flex flex-col justify-between">
+            <div>
+              <DynamicFeed className="text-cyan-400 h-16 w-16 mx-auto mb-4" />
+              <h3 className="text-2xl font-bold mb-2">Platform Fatigue</h3>
+              <p className="text-slate-400">A great blog post doesn't work as a tweet. A good Instagram caption is different. Adapting a single idea for multiple channels is repetitive and draining.</p>
+            </div>
+            <div className="mt-6 border-t border-slate-700/60 pt-4">
+              <p className="text-3xl font-extrabold text-cyan-400">Omnichannel</p>
+              <p className="text-slate-400 text-sm mt-1">Tailors one core concept across social platforms</p>
+            </div>
           </div>
         </div>
       </section>
 
-      <div className="text-center">
-        <ArrowDownward className="text-violet-500 h-20 w-20 animate-bounce" />
+      <div className="text-center" aria-hidden="true">
+        <ArrowDownward className="text-violet-500 h-20 w-20 motion-safe:animate-bounce" />
       </div>
 
       {/* --- Section 3: The Solution --- */}
@@ -73,7 +83,7 @@ const About = () => {
         <h2 className="text-4xl font-bold text-center mb-12">The Solution: An AI Co-Pilot</h2>
         <div className="bg-slate-800/50 p-10 rounded-xl border border-slate-700 text-center">
           <p className="text-xl text-slate-300 leading-relaxed">
-            <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Post GenerAItor</span> wasn't built to replace creators, but to <span className="font-bold text-white">empower</span> them. It acts as a tireless creative partner, handling the repetitive, time-consuming task of adapting ideas into platform-specific formats. By automating the grunt work, it frees you to focus on what matters most: <span className="font-bold text-white">your unique voice and strategy.</span>
+            <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-violet-500">Content GenerAItor</span> wasn't built to replace creators, but to <span className="font-bold text-white">empower</span> them. It acts as a tireless creative partner, handling the repetitive, time-consuming task of adapting ideas into platform-specific formats. By automating the grunt work, it frees you to focus on what matters most: <span className="font-bold text-white">your unique voice and strategy.</span>
           </p>
         </div>
       </section>
@@ -93,14 +103,19 @@ const About = () => {
       {/* --- Section 5: The Developer --- */}
       <section className="text-center">
         <h2 className="text-4xl font-bold mb-12">Meet the Developer</h2>
-        <YourPhoto />
+        <CreatorPhoto />
         <h3 className="text-3xl font-bold mt-6">Omar Lengua</h3>
         <p className="text-violet-400 text-xl">Full-Stack Developer & AI Enthusiast</p>
-        <p className="max-w-2xl mx-auto text-slate-300 mt-4">
-          I'm passionate about building tools that solve real-world problems. This project is a demonstration of how we can leverage cutting-edge AI to enhance human creativity and productivity.
+        <p className="max-w-2xl mx-auto text-slate-300 mt-4 leading-relaxed">
+          I'm passionate about building tools that solve real-world problems. This project is a demonstration of how we can leverage cutting-edge AI and agentic architectures to enhance human creativity and productivity.
         </p>
         <div className="mt-8">
-            <a href="https://github.com/your-username" target="_blank" rel="noopener noreferrer" className="inline-block bg-slate-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-600 transition-colors">
+            <a
+              href="https://github.com/Omarlsant/p-XI-llm-content-generator"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-cyan-500/20 hover:-translate-y-0.5 transition-all"
+            >
               View on GitHub
             </a>
         </div>
