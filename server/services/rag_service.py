@@ -61,7 +61,8 @@ class RAGService:
             return 0
 
     async def query(self, question: str) -> str:
-        logger.info(f"RAGService querying with: '{question}'")
+        logger.info(f"RAGService querying (question_length={len(question)})")
+        logger.debug(f"RAGService question text: {question}")
         
         # Verify knowledge base availability without exposing internal file paths
         if not os.path.exists(DB_DIR) or self.doc_count() == 0:
@@ -201,7 +202,8 @@ class GraphRAGService:
         logger.info(f"Graph built with {self.graph.number_of_nodes()} nodes and {self.graph.number_of_edges()} edges.")
 
     async def query(self, question: str) -> str:
-        logger.info(f"GraphRAG querying with: '{question}'")
+        logger.info(f"GraphRAG querying (question_length={len(question)})")
+        logger.debug(f"GraphRAG question text: {question}")
         await self.ensure_initialized()
 
         results = set()
