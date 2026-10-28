@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import requests
 from langchain_community.document_loaders import PyPDFLoader
@@ -63,23 +64,31 @@ def load_and_split_documents(filepaths: list):
 def main():
     print("--- Starting MANUAL Data Ingestion Process ---")
     
-    # Clean up old database if it exists
+    # Clean up old database contents without deleting the mount point directory itself
     if os.path.exists(DB_DIR):
-        print(f"Deleting old database at: {DB_DIR}")
-        shutil.rmtree(DB_DIR)
+        print(f"Cleaning contents of database directory at: {DB_DIR}")
+        for item in os.listdir(DB_DIR):
+            item_path = os.path.join(DB_DIR, item)
+            try:
+                if os.path.isfile(item_path) or os.path.islink(item_path):
+                    os.unlink(item_path)
+                elif os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+            except Exception as e:
+                print(f"Warning: Failed to remove {item_path}: {e}")
 
     # Download the papers from the hardcoded list
     paper_filepaths = download_papers_manually(PAPER_URLS)
     
     if not paper_filepaths:
         print("No papers were downloaded. Please check network connection. Exiting.")
-        return
+        sys.exit(1)
 
     document_chunks = load_and_split_documents(paper_filepaths)
 
     if not document_chunks:
         print("No document chunks were created. Exiting.")
-        return
+        sys.exit(1)
 
     print(f"Creating new ChromaDB at: {DB_DIR}")
     db = Chroma.from_documents(
@@ -93,7 +102,8 @@ def main():
     # Clean up temporary PDF files
     for pdf in paper_filepaths:
         os.remove(pdf)
-    shutil.rmtree(PDF_DIR)
+    if os.path.exists(PDF_DIR):
+        shutil.rmtree(PDF_DIR)
     print("Temporary PDF files and directory have been removed.")
 
 if __name__ == "__main__":

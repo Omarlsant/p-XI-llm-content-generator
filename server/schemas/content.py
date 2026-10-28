@@ -1,10 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 
 # --- Content Agent Schemas ---
 class ContentGenerationRequest(BaseModel):
     topic: str
-    platforms: List[str]
+    platforms: List[str] = Field(default_factory=lambda: ["blog"])
     model: str = 'llama3'
     company_info: Optional[str] = None
     language: str = 'English'
