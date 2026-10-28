@@ -44,7 +44,7 @@ La forma más fácil y recomendada de ejecutar este proyecto es con Docker. Solo
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone https://github.com/tu-usuario/p-XI-llm-content-generator.git
+    git clone https://github.com/Omarlsant/p-XI-llm-content-generator.git
     cd p-XI-llm-content-generator
     ```
 
