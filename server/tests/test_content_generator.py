@@ -42,19 +42,19 @@ def test_generator_service_contract_partial_success():
     )
 
     async def run_test():
-        # Mock generate_single_platform where blog succeeds but X fails
+        # Mock generate_simple_content where blog succeeds but X fails
         async def mock_generate(platform, *args, **kwargs):
             if platform == "blog":
                 return "Generated blog article."
             raise RuntimeError("Ollama context timeout on X")
 
-        with patch("services.generator_service.generate_single_platform", side_effect=mock_generate), \
+        with patch("services.generator_service.generate_simple_content", side_effect=mock_generate), \
              patch("services.generator_service.find_relevant_image", return_value={"url": "http://img", "alt": "alt"}):
             result = await generate_content_service(request)
-            assert result.generated_content.get("blog") == "Generated blog article."
-            assert "X" in result.errors
-            assert "Ollama context timeout on X" in result.errors["X"]
-            assert result.success is True
+            assert result["generated_content"].get("blog") == "Generated blog article."
+            assert "X" in result["errors"]
+            assert "Ollama context timeout on X" in result["errors"]["X"]
+            assert result["success"] is True
 
     asyncio.run(run_test())
 
@@ -62,7 +62,7 @@ def test_generator_service_contract_total_failure():
     """Verify TASK-011 contract: total failure across all platforms raises HTTPException 502."""
     try:
         from schemas.content import ContentGenerationRequest
-        from services.generator_service import generate_content_service
+        from api.v1.endpoints.content_generator import generate_content
         from fastapi import HTTPException
     except ImportError:
         return
@@ -78,15 +78,15 @@ def test_generator_service_contract_total_failure():
         async def mock_fail(*args, **kwargs):
             raise ConnectionError("Ollama service unavailable")
 
-        with patch("services.generator_service.generate_single_platform", side_effect=mock_fail), \
+        with patch("services.generator_service.generate_simple_content", side_effect=mock_fail), \
              patch("services.generator_service.find_relevant_image", return_value=None):
             try:
-                await generate_content_service(request)
+                await generate_content(request)
                 assert False, "Should have raised HTTPException with status_code=502"
             except HTTPException as e:
                 assert e.status_code == 502
-                assert isinstance(e.detail, dict)
-                assert "blog" in e.detail.get("errors", {})
-                assert "X" in e.detail.get("errors", {})
+                assert "Ollama service unavailable" in str(e.detail)
+                assert "blog" in str(e.detail)
+                assert "X" in str(e.detail)
 
     asyncio.run(run_test())

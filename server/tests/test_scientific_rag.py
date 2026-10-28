@@ -36,19 +36,23 @@ def test_rag_service_empty_database_handling():
     except ImportError:
         return
 
+    import asyncio
+
     # Create instance with mocked vector store having 0 documents
     mock_vector_store = MagicMock()
     mock_vector_store._collection.count.return_value = 0
 
     with patch.object(RAGService, "__init__", lambda self: None):
         service = RAGService()
+        service.vectorstore = mock_vector_store
         service.vector_store = mock_vector_store
         service.llm = MagicMock()
-        service.rag_chain = MagicMock()
-        service.evaluator_chain = MagicMock()
+        service.retriever = MagicMock()
+        service.generation_chain = MagicMock()
+        service.grading_chain = MagicMock()
 
         try:
-            service.query("What is RAG?")
+            asyncio.run(service.query("What is RAG?"))
             assert False, "Should have raised HTTPException 503 for empty vector database"
         except HTTPException as exc:
             assert exc.status_code == 503
