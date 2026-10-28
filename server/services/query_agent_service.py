@@ -1,5 +1,5 @@
 from typing import Optional
-from langchain_community.chat_models import ChatOllama
+from langchain_ollama import ChatOllama
 from schemas.content import QueryAgentRequest, ContentGenerationRequest, SupportedPlatform
 from services import generator_service
 from services import rag_service

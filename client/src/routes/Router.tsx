@@ -1,13 +1,22 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "../layout/Layout";
-import Home from "../pages/Home";
-import ContentPage from "../pages/ContentPage";
-import AboutPage from "../pages/AboutPage";
-import ScientificPage from "../pages/ScientificPage";
-import ContentFormPage from "../pages/ContentFormPage";
-import ContentQueryPage from "../pages/ContentQueryPage";
-import NotFoundPage from "../pages/NotFoundPage";
 import RouteError from "../components/RouteError";
+import PageLoader from "../components/PageLoader";
+
+const Home = lazy(() => import("../pages/Home"));
+const ContentPage = lazy(() => import("../pages/ContentPage"));
+const AboutPage = lazy(() => import("../pages/AboutPage"));
+const ScientificPage = lazy(() => import("../pages/ScientificPage"));
+const ContentFormPage = lazy(() => import("../pages/ContentFormPage"));
+const ContentQueryPage = lazy(() => import("../pages/ContentQueryPage"));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage"));
+
+const withSuspense = (Component: React.ComponentType) => (
+  <Suspense fallback={<PageLoader />}>
+    <Component />
+  </Suspense>
+);
 
 export const router = createBrowserRouter([
     {
@@ -17,31 +26,31 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <Home />
+                element: withSuspense(Home)
             },
             {
                 path: "/generate",
-                element: <ContentPage />
+                element: withSuspense(ContentPage)
             },
             {
                 path: "/generate/content-agent",
-                element: <ContentFormPage />
+                element: withSuspense(ContentFormPage)
             },
             {
                 path: "/generate/query-agent",
-                element: <ContentQueryPage />
+                element: withSuspense(ContentQueryPage)
             },
             {
                 path: "/scientific-rag",
-                element: <ScientificPage />
+                element: withSuspense(ScientificPage)
             },
             {
                 path: "/about",
-                element: <AboutPage />
+                element: withSuspense(AboutPage)
             },
             {
                 path: "*",
-                element: <NotFoundPage />
+                element: withSuspense(NotFoundPage)
             }
         ]
     }
