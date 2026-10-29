@@ -1,6 +1,6 @@
 # 🚀 Content GenerAItor: Un Asistente de Contenido con IA y Agentes Especializados
 
-<img width="2079" height="320" alt="Captura de pantalla 2025-07-30 121038" src="https://github.com/user-attachments/assets/3ee032c2-a4fa-4d47-8da3-fab2bc020796" />
+<img width="1071" height="185" alt="Screenshot 2026-10-29 at 01 06 38" src="https://github.com/user-attachments/assets/a6ad6796-1647-478d-aa0c-ccc590a649dd" />
 
 
 **Content GenerAItor** es una aplicación full-stack desarrollada para explorar y demostrar las capacidades de los Grandes Modelos de Lenguaje (LLMs) y los patrones de IA modernos. La aplicación cuenta con múltiples agentes de IA especializados, cada uno diseñado para una tarea específica, desde la creación de contenido creativo hasta la investigación factual basada en documentos.
